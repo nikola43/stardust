@@ -1,4 +1,4 @@
-module github.com/mehrdadrad/radvpn
+module github.com/nikola43/stardust
 
 go 1.13
 

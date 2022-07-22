@@ -1,7 +1,7 @@
 ## Decentralized VPN
-[![Build Status](https://travis-ci.org/mehrdadrad/radvpn.svg?branch=master)](https://travis-ci.org/mehrdadrad/radvpn) 
-[![Go Report Card](https://goreportcard.com/badge/github.com/mehrdadrad/radvpn)](https://goreportcard.com/report/github.com/mehrdadrad/radvpn)
-[![GoDoc](https://godoc.org/github.com/mehrdadrad/radvpn?status.svg)](https://godoc.org/github.com/mehrdadrad/radvpn)
+[![Build Status](https://travis-ci.org/nikola43/stardust.svg?branch=master)](https://travis-ci.org/nikola43/stardust) 
+[![Go Report Card](https://goreportcard.com/badge/github.com/nikola43/stardust)](https://goreportcard.com/report/github.com/nikola43/stardust)
+[![GoDoc](https://godoc.org/github.com/nikola43/stardust?status.svg)](https://godoc.org/github.com/nikola43/stardust)
 
 ![Alt text](/docs/imgs/radvpn.png?raw=true "radvpn")
 
@@ -10,15 +10,15 @@ The RadVPN doesn't need any central point as it connects to other nodes directly
 ## Build
 Given that the Go Language compiler (version 1.11 or greater is required) is installed, you can build it with:
 ```bash
-go get github.com/mehrdadrad/radvpn
-cd $GOPATH/src/github.com/mehrdadrad/radvpn
+go get github.com/nikola43/stardust
+cd $GOPATH/src/github.com/nikola43/stardust
 go build .
 ```
 
 ## Docker
 ```bash
-docker pull mehrdadrad/radvpn:latest
-docker run --privileged -d -p 8085:8085 -v $(pwd)/radvpn.yaml:/etc/radvpn.yaml -e RADVPN_NODE_NAME=node1 mehrdadrad/radvpn:latest
+docker pull nikola43/stardust:latest
+docker run --privileged -d -p 8085:8085 -v $(pwd)/radvpn.yaml:/etc/radvpn.yaml -e RADVPN_NODE_NAME=node1 nikola43/stardust:latest
 ```
 
 ## Basic Config
@@ -81,7 +81,7 @@ radvpn -config radvpn.conf
 ### Configuration with [etcd](https://github.com/etcd-io/etcd)
 ![Alt text](/docs/imgs/radvpnetcd.png?raw=true "radvpn etcd")
 
-[sample configuration](https://github.com/mehrdadrad/radvpn/blob/master/radvpn.yaml)
+[sample configuration](https://github.com/nikola43/stardust/blob/master/radvpn.yaml)
 #### Run with etcd
 ```bash
 radvpn -config radvpn.conf -etcd

@@ -9,9 +9,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mehrdadrad/radvpn/config"
-	"github.com/mehrdadrad/radvpn/crypto"
-	"github.com/mehrdadrad/radvpn/router"
+	"github.com/nikola43/stardust/config"
+	"github.com/nikola43/stardust/crypto"
+	"github.com/nikola43/stardust/router"
 
 	"golang.org/x/sys/unix"
 

@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mehrdadrad/radvpn/config"
+	"github.com/nikola43/stardust/config"
 
 	"github.com/vishvananda/netlink"
 )

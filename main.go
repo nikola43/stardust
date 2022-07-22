@@ -7,9 +7,9 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/mehrdadrad/radvpn/config"
-	"github.com/mehrdadrad/radvpn/router"
-	"github.com/mehrdadrad/radvpn/server"
+	"github.com/nikola43/stardust/config"
+	"github.com/nikola43/stardust/router"
+	"github.com/nikola43/stardust/server"
 )
 
 var (
