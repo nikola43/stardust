@@ -79,6 +79,7 @@ func TestListenPacket(t *testing.T) {
 		if string(buff[:n]) != msg {
 			t.Errorf("expect to have %s but got, %s", msg, string(buff[:n]))
 		}
+		fmt.Println("listen bytes size", n)
 	} else {
 		t.Error(err)
 	}

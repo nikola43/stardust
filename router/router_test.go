@@ -9,8 +9,8 @@ import (
 func TestAddFromRouter(t *testing.T) {
 	r := New(context.Background()).Table()
 
-	subnetStr := "10.0.1.0/24"
-	nexthopStr := "192.168.55.1"
+	subnetStr := "10.0.2.0/24"
+	nexthopStr := "192.168.0.19"
 
 	_, subnet, _ := net.ParseCIDR(subnetStr)
 	nexthop := net.ParseIP(nexthopStr)
