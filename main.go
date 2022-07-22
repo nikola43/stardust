@@ -11,6 +11,7 @@ import (
 	"github.com/nikola43/stardust/config"
 	"github.com/nikola43/stardust/router"
 	"github.com/nikola43/stardust/server"
+	sysinfo "github.com/nikola43/stardust/sysinfo"
 )
 
 var (
@@ -28,9 +29,47 @@ func init() {
 }
 
 func main() {
+	// create unix syscall
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, os.Interrupt, os.Kill)
+	notify := make(chan struct{}, 1)
+
+	GetSysInfo()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+	UpdateEtcdConf()
 
+	// create unix syscall
+	signal.Notify(sig, os.Interrupt, os.Kill)
+
+	// get etcd config
+	cfg := GetEtcdConfig()
+	cfg.Watcher(ctx, notify)
+
+	// init server
+	r := router.New(ctx)
+	s := server.Server{
+		Config: cfg,
+		Router: r,
+		Notify: notify,
+	}
+	s.Run(ctx)
+	<-sig
+}
+
+func InitServer(octx context.Context, notify *chan struct{}) {
+	r := router.New(octx)
+	s := server.Server{
+		Config: cfg,
+		Router: r,
+		Notify: *notify,
+	}
+
+	s.Run(octx)
+}
+
+func UpdateEtcdConf() {
+	// check if we need update nodes config file
 	if update != "" {
 		err := config.UpdateConf(update, configFile)
 		if err != nil {
@@ -39,33 +78,29 @@ func main() {
 		}
 		os.Exit(0)
 	}
+}
 
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, os.Interrupt, os.Kill)
+func GetEtcdConfig() *config.Config {
+	var cfg *config.Config
 
+	// get etcd config
 	if etcd {
 		cfg = config.New().FromEtcd(configFile)
 	} else {
 		cfg = config.New().FromFile(configFile)
 	}
-
 	err := cfg.Load()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	notify := make(chan struct{}, 1)
-	cfg.Watcher(ctx, notify)
+	return cfg
+}
 
-	r := router.New(ctx)
+func GetSysInfo() {
 
-	s := server.Server{
-		Config: cfg,
-		Router: r,
-		Notify: notify,
-	}
-
-	s.Run(ctx)
-
-	<-sig
+	info := sysinfo.NewSysInfo()
+	fmt.Printf("%+v\n", info)
+	fmt.Printf("%+s\n", info.ToString())
+	fmt.Printf("%+s\n", info.ToHash())
 }
