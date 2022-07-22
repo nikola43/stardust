@@ -28,3 +28,10 @@ nodes:
         - 10.110.0.3/24
       privateSubnets:
         - 10.110.0.0/24
+  - node:
+      name: node3
+      address: 206.189.13.159
+      privateAddresses:
+        - 10.110.0.2/24
+      privateSubnets:
+        - 10.110.0.0/24
