@@ -223,7 +223,7 @@ func UpdateConf(source string, cfile string) error {
 func setDefaultConfig(c *Config) {
 	// set defaults
 	if c.Server.Address == "" {
-		c.Server.Address = ":4000"
+		c.Server.Address = ":8085"
 	}
 
 	if c.Server.MaxWorkers == 0 {

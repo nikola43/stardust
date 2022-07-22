@@ -57,7 +57,7 @@ func TestListenPacket(t *testing.T) {
 			Mtu        int    `yaml:"mtu"`
 		}{
 			Keepalive: 5,
-			Address:   ":4000",
+			Address:   ":8085",
 		},
 	}
 
@@ -69,7 +69,7 @@ func TestListenPacket(t *testing.T) {
 	l, err := s.listenPacket(context.Background())
 	if err == nil {
 		_ = l
-		conn, err := net.Dial("udp", "localhost:4000")
+		conn, err := net.Dial("udp", "localhost:8085")
 		if err == nil {
 			fmt.Fprintf(conn, msg)
 		}

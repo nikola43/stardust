@@ -8,6 +8,6 @@ RUN go mod download
 COPY . .
 RUN go build .
 
-EXPOSE 4000
+EXPOSE 8085
 
 ENTRYPOINT ["/app/radvpn"]
