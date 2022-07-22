@@ -3,7 +3,7 @@ package config
 import (
 	"context"
 	"errors"
-	"log"
+	"fmt"
 	"os"
 	"path"
 	"strconv"
@@ -170,14 +170,16 @@ func (e etcd) watch(ctx context.Context, notify chan struct{}) {
 		}
 
 		if err := e.connect(); err != nil {
-			log.Println(err)
+			fmt.Println("connect")
+			panic(err)
 			time.Sleep(2 * time.Second)
 			continue
 		}
 
 		revStr, err := e.getKey("/stardust/revision")
 		if err != nil {
-			log.Println(err)
+			fmt.Println("getKey")
+			panic(err)
 			time.Sleep(5 * time.Second)
 			continue
 		}
@@ -185,7 +187,8 @@ func (e etcd) watch(ctx context.Context, notify chan struct{}) {
 		if pRev == 0 && cRev == 0 {
 			revInt, err := strconv.Atoi(string(revStr))
 			if err != nil {
-				log.Println(err)
+				fmt.Println("pRev")
+				panic(err)
 				continue
 			}
 
@@ -195,7 +198,8 @@ func (e etcd) watch(ctx context.Context, notify chan struct{}) {
 
 		cRev, err = strconv.Atoi(string(revStr))
 		if err != nil {
-			log.Println(err)
+			fmt.Println("cRev")
+			panic(err)
 			continue
 		}
 

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -33,7 +34,8 @@ func main() {
 	if update != "" {
 		err := config.UpdateConf(update, configFile)
 		if err != nil {
-			log.Println(err)
+			fmt.Println("UpdateConf")
+			panic(err)
 		}
 		os.Exit(0)
 	}

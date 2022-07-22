@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net"
 	"os"
@@ -63,10 +64,11 @@ func (s Server) Run(ctx context.Context) {
 		}
 	}
 
-	log.Println("address:", s.Config.Server.Address)
+	fmt.Println("address:", s.Config.Server.Address)
 
 	err = setupTunInterface(node.PrivateAddresses, s.Config.Server.Mtu)
 	if err != nil {
+		fmt.Println("setupTunInterface")
 		log.Fatal(err)
 	}
 
@@ -118,7 +120,7 @@ func (s *Server) watcher(ctx context.Context) {
 				return
 			}
 
-			log.Println("updating routes and crypto key ...")
+			panic("updating routes and crypto key ...")
 
 			s.updateRoutes()
 			if !s.Config.Server.Insecure {
@@ -132,8 +134,8 @@ func (s *Server) run(ctx context.Context) {
 	for i := 0; i < s.Config.Server.MaxWorkers; i++ {
 		conn, err := s.listenPacket(ctx)
 		if err != nil {
+			fmt.Println("listenPacket")
 			log.Fatal(err)
-
 		}
 
 		go s.reader(ctx, conn)
@@ -196,14 +198,14 @@ func (s *Server) reader(ctx context.Context, conn net.PacketConn) {
 		b := make([]byte, maxBufSize)
 		n, _, err := conn.ReadFrom(b)
 		if err != nil {
-			log.Println(err)
+			panic(err)
 			continue
 		}
 
 		if !s.Config.Server.Insecure {
 			b, err = s.Cipher.Decrypt(b[:n])
 			if err != nil {
-				log.Println(err)
+				panic(err)
 				continue
 			}
 		}
@@ -220,6 +222,7 @@ func (s *Server) reader(ctx context.Context, conn net.PacketConn) {
 func (s *Server) writer(ctx context.Context, conn net.PacketConn) {
 	_, port, err := net.SplitHostPort(s.Config.Server.Address)
 	if err != nil {
+		fmt.Println("SplitHostPort")
 		log.Fatal(err)
 	}
 
@@ -228,7 +231,8 @@ func (s *Server) writer(ctx context.Context, conn net.PacketConn) {
 		case b := <-s.write:
 			h, err := parseHeader(b)
 			if err != nil {
-				log.Println(err)
+				fmt.Println("parseHeader")
+				panic(err)
 				continue
 			}
 
@@ -240,14 +244,16 @@ func (s *Server) writer(ctx context.Context, conn net.PacketConn) {
 				if !s.Config.Server.Insecure {
 					b, err = s.Cipher.Encrypt(b)
 					if err != nil {
-						log.Println(err)
+						fmt.Println("Encrypt")
+						panic(err)
 						continue
 					}
 				}
 
 				_, err = conn.WriteTo(b, rAddr)
 				if err != nil {
-					log.Println(err)
+					fmt.Println("WriteTo")
+					panic(err)
 				}
 			}
 
@@ -268,7 +274,7 @@ func (s *Server) updateRoutes() {
 			nexthop := net.ParseIP(nexthop)
 			err := s.Router.Table().Add(dst, nexthop)
 			if err != nil && !errors.Is(err, os.ErrExist) {
-				log.Println(err)
+				panic(err)
 			}
 		}
 	}
@@ -286,7 +292,7 @@ func (s *Server) updateRoutes() {
 				nexthop := net.ParseIP(nexthop)
 				err := s.Router.Table().Delete(dst, nexthop)
 				if err != nil {
-					log.Println(err)
+					panic(err)
 				}
 			}
 		}
@@ -318,7 +324,7 @@ func (t *tun) reader(ctx context.Context, ifce *water.Interface) {
 		b := make([]byte, maxBufSize)
 		n, err := ifce.Read(b)
 		if err != nil {
-			log.Println(err)
+			panic(err)
 		}
 
 		select {
@@ -333,15 +339,20 @@ func (t *tun) reader(ctx context.Context, ifce *water.Interface) {
 
 // writer writes to tun interface
 func (t *tun) writer(ctx context.Context, ifce *water.Interface) {
-	var b []byte
+	var b = make([]byte, 0)
 
 	for {
 		select {
 		case b = <-t.write:
-			_, err := ifce.Write(b)
+			fmt.Println("b", b)
+
+			byteArray := []byte{97, 98, 99, 100, 101, 102}
+
+			n, err := ifce.Write(byteArray)
 			if err != nil {
-				log.Println(err)
+				panic(err)
 			}
+			fmt.Println("writted", n)
 
 		case <-ctx.Done():
 			return
