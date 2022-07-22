@@ -21,3 +21,10 @@ nodes:
         - 10.0.2.1/24
       privateSubnets:
         - 10.0.2.0/24
+  - node:
+      name: node2
+      address: 146.190.239.223
+      privateAddresses:
+        - 10.110.0.3/24
+      privateSubnets:
+        - 10.110.0.0/24
