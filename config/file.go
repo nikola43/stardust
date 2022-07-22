@@ -25,7 +25,7 @@ func (f *file) load() (*Config, error) {
 		configFile = f.cfile
 	} else {
 		for _, path := range f.paths {
-			cf := filepath.Join(path, "radvpn.yaml")
+			cf := filepath.Join(path, "stardust.yaml")
 			if _, err := os.Stat(cf); err == nil {
 				configFile = cf
 			}

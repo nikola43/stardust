@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"go.etcd.io/etcd/clientv3"
+	clientv3 "go.etcd.io/etcd/client/v3"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -52,7 +52,7 @@ func (e *etcd) load() (*Config, error) {
 	}
 	defer e.close()
 
-	etcdRev, err := e.getKey("/radvpn/revision")
+	etcdRev, err := e.getKey("/stardust/revision")
 	if err != nil && !errors.Is(err, os.ErrNotExist) {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func (e *etcd) load() (*Config, error) {
 }
 
 func (e etcd) putConfig(cfg *Config) error {
-	base := "/radvpn/"
+	base := "/stardust/"
 	config, err := yaml.Marshal(cfg)
 	if err != nil {
 		return err
@@ -109,7 +109,7 @@ func (e etcd) putConfig(cfg *Config) error {
 
 func (e etcd) getConfig() (*Config, error) {
 	cfg := &Config{}
-	base := "/radvpn/"
+	base := "/stardust/"
 
 	b, err := e.getKey(path.Join(base, "config"))
 	if err != nil {
@@ -175,7 +175,7 @@ func (e etcd) watch(ctx context.Context, notify chan struct{}) {
 			continue
 		}
 
-		revStr, err := e.getKey("/radvpn/revision")
+		revStr, err := e.getKey("/stardust/revision")
 		if err != nil {
 			log.Println(err)
 			time.Sleep(5 * time.Second)

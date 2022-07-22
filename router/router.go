@@ -63,7 +63,7 @@ func (r *Routes) addToRouter(networkid *net.IPNet, nexthop net.IP) error {
 }
 
 func (r *Routes) addToHost(networkid *net.IPNet, nexthop net.IP) error {
-	ifce, err := netlink.LinkByName("radvpn")
+	ifce, err := netlink.LinkByName("stardust")
 	if err != nil {
 		return err
 	}
@@ -109,7 +109,7 @@ func (r *Routes) delFromRouter(networkid *net.IPNet, nexthop net.IP) error {
 }
 
 func (r *Routes) delFromHost(networkid *net.IPNet, nexthop net.IP) error {
-	ifce, err := netlink.LinkByName("radvpn")
+	ifce, err := netlink.LinkByName("stardust")
 	if err != nil {
 		return err
 	}

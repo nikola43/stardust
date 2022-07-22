@@ -158,7 +158,7 @@ func (c *Config) GetIRB() map[string][]string {
 // Whoami returns current node config
 func (c Config) Whoami() (Node, error) {
 	// if the server name exist at env
-	nodeName := os.Getenv("RADVPN_NODE_NAME")
+	nodeName := os.Getenv("stardust_NODE_NAME")
 	if nodeName != "" {
 		for _, nodes := range c.Nodes {
 			if nodes.Node.Name == nodeName {

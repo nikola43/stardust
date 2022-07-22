@@ -10,4 +10,4 @@ RUN go build .
 
 EXPOSE 8085
 
-ENTRYPOINT ["/app/radvpn"]
+ENTRYPOINT ["/app/stardust"]

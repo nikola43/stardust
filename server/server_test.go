@@ -65,7 +65,7 @@ func TestListenPacket(t *testing.T) {
 		Config: cfg,
 	}
 
-	msg := "hello radvpn"
+	msg := "hello stardust"
 	l, err := s.listenPacket(context.Background())
 	if err == nil {
 		_ = l
@@ -168,7 +168,7 @@ func testCreateTunInterface(t *testing.T) {
 		t.Error("unexpected error:", err)
 	}
 
-	_, err = netlink.LinkByName("radvpn")
+	_, err = netlink.LinkByName("stardust")
 	if err != nil {
 		t.Error("unexpected error", err)
 	}
@@ -178,7 +178,7 @@ func testSetupTunInterface(t *testing.T) {
 	createTunInterface()
 	setupTunInterface([]string{"10.0.1.1/24"}, 1400)
 
-	ifce, err := netlink.LinkByName("radvpn")
+	ifce, err := netlink.LinkByName("stardust")
 	if err != nil {
 		t.Error("unexpected error", err)
 	}

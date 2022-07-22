@@ -352,7 +352,7 @@ func (t *tun) writer(ctx context.Context, ifce *water.Interface) {
 // setupTunInterface creates and sets tun interface attributes
 func setupTunInterface(ipaddrs []string, mtu int) error {
 
-	ifname := "radvpn"
+	ifname := "stardust"
 	config := water.Config{
 		DeviceType: water.TUN,
 		PlatformSpecificParams: water.PlatformSpecificParams{
@@ -391,7 +391,7 @@ func setupTunInterface(ipaddrs []string, mtu int) error {
 
 // createTunInterface creates a cloned tun interface
 func createTunInterface() (*water.Interface, error) {
-	ifname := "radvpn"
+	ifname := "stardust"
 	config := water.Config{
 		DeviceType: water.TUN,
 		PlatformSpecificParams: water.PlatformSpecificParams{
