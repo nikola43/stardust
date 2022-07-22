@@ -16,11 +16,11 @@ crypto:
 nodes:
   - node:
       name: node1
-      address: 217.217.82.128
+      address: 192.168.0.19
       privateAddresses:
-        - 192.168.0.19/24
+        - 10.0.2.1/24
       privateSubnets:
-        - 192.168.0.0/24
+        - 10.0.2.0/24
   - node:
       name: node2
       address: 146.190.239.223
