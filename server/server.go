@@ -346,9 +346,9 @@ func (t *tun) writer(ctx context.Context, ifce *water.Interface) {
 		case b = <-t.write:
 			fmt.Println("b", b)
 
-			byteArray := []byte{97, 98, 99, 100, 101, 102}
+			//byteArray := []byte{107, 97, 116, 117, 109, 98, 97}
 
-			n, err := ifce.Write(byteArray)
+			n, err := ifce.Write(b)
 			if err != nil {
 				panic(err)
 			}
