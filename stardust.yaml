@@ -6,7 +6,7 @@ etcd:
 
 server:
   keepalive: 10
-  insecure: false
+  insecure: true
   mtu: 1300
 
 crypto:
