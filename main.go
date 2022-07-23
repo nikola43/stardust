@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"crypto/rand"
 	"flag"
 	"fmt"
 	"log"
@@ -15,13 +14,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/fatih/color"
+	"github.com/nikola43/stardust/NodeManagerV83"
 	"github.com/nikola43/stardust/config"
-	crypto "github.com/nikola43/stardust/crypto"
 	"github.com/nikola43/stardust/router"
 	"github.com/nikola43/stardust/server"
 	sysinfo "github.com/nikola43/stardust/sysinfo"
 	"github.com/nikola43/web3golanghelper/web3helper"
-	"github.com/nikola43/stardust/NodeManagerV83"
 )
 
 var (
@@ -40,14 +38,14 @@ func init() {
 
 func main() {
 
-	sysHash := GetSysInfo()
+	//sysHash := GetSysInfo()
 
-	key := make([]byte, 32)
-	rand.Read(key)
-	fmt.Println(key)
-	crypto.EncryptSysData([]byte(sysHash), []byte(key))
-	crypto.DecryptFile("sysdata.txt.bin", []byte(key))
-	os.Exit(0)
+	//key := make([]byte, 32)
+	//rand.Read(key)
+	//fmt.Println(key)
+	//crypto.EncryptSysData([]byte(sysHash), []byte(key))
+	//crypto.DecryptFile("sysdata.txt.bin", []byte(key))
+	//os.Exit(0)
 
 	// create unix syscall
 	sig := make(chan os.Signal, 1)

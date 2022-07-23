@@ -46,6 +46,22 @@ func TestInitCrypto(t *testing.T) {
 	}
 }
 
+func TestListenPacketV2(t *testing.T) {
+
+	msg := "hello stardust"
+	conn, err := net.Dial("udp", "146.190.239.223:8085")
+	if err != nil {
+		fmt.Println(err)
+		t.Error()
+	}
+
+	if conn == nil {
+		t.Error()
+	}
+	fmt.Fprintf(conn, msg)
+
+}
+
 func TestListenPacket(t *testing.T) {
 	cfg := &config.Config{
 		Server: struct {
