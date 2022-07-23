@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"net"
 	"testing"
 	"time"
@@ -49,7 +50,7 @@ func TestInitCrypto(t *testing.T) {
 func TestListenPacketV2(t *testing.T) {
 
 	msg := "hello stardust"
-	conn, err := net.Dial("udp", "146.190.239.223:8085")
+	conn, err := net.Dial("udp", "192.168.0.19:8085")
 	if err != nil {
 		fmt.Println(err)
 		t.Error()
@@ -59,6 +60,27 @@ func TestListenPacketV2(t *testing.T) {
 		t.Error()
 	}
 	fmt.Fprintf(conn, msg)
+
+}
+
+func TestListenPacketWriteFile(t *testing.T) {
+
+	dat, err := ioutil.ReadFile("./file.txt")
+	if err != nil {
+		fmt.Println(err)
+		t.Error()
+	}
+
+	conn, err := net.Dial("udp", "192.168.0.19:8085")
+	if err != nil {
+		fmt.Println(err)
+		t.Error()
+	}
+
+	if conn == nil {
+		t.Error()
+	}
+	fmt.Fprintf(conn, string(dat))
 
 }
 
