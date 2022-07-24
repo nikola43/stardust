@@ -54,7 +54,7 @@ func main() {
 	PrintUserBalance2("0xFABB0ac9d68B0B445fB7357272Ff202C5651694a", 923)
 
 	mw.ToString()
-	os.Exit(0)
+	
 
 	//sysHash := GetSysInfo()
 
@@ -67,15 +67,13 @@ func main() {
 
 	// create unix syscall
 	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, os.Interrupt, os.Kill)
 	notify := make(chan struct{}, 1)
+	signal.Notify(sig, os.Interrupt, os.Kill)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	UpdateEtcdConf()
 
-	// create unix syscall
-	signal.Notify(sig, os.Interrupt, os.Kill)
+	UpdateEtcdConf()
 
 	// get etcd config
 	cfg := GetEtcdConfig()
