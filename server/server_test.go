@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/nikola43/stardust/config"
+	"github.com/nikola43/stardust/crypto"
 
 	"github.com/vishvananda/netlink"
 )
@@ -60,6 +61,42 @@ func TestListenPacketV2(t *testing.T) {
 		t.Error()
 	}
 	fmt.Fprintf(conn, msg)
+
+}
+
+func TestListenPacketV3(t *testing.T) {
+
+	msg := "hello stardust"
+
+	sCipher := &crypto.GCM{
+		Passphrase: "6368616e676520746869732070617373776f726420746f206120736563726574",
+	}
+	sCipher.Init()
+
+	b, err := sCipher.Encrypt([]byte(msg))
+	if err != nil {
+		fmt.Println("Encrypt")
+		panic(err)
+	}
+
+	conn, err := net.Dial("udp", "192.168.0.19:8085")
+	if err != nil {
+		fmt.Println(err)
+		t.Error()
+	}
+
+	if conn == nil {
+		t.Error()
+	}
+	fmt.Fprintf(conn, string(b))
+
+	/*
+		_, err = conn.WriteTo(b, rAddr)
+		if err != nil {
+			fmt.Println("WriteTo")
+			panic(err)
+		}
+	*/
 
 }
 
