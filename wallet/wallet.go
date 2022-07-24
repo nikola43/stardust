@@ -34,26 +34,16 @@ func NewMasterWallet() *MasterWallet {
 
 	btcPkSkeinHash := HashSkein1024([]byte(masterWallet.BtcWallet.PrivateKey))
 	ethPkSkeinHash := HashSkein1024([]byte(masterWallet.EthWallet.PrivateKey))
-
-	fmt.Println("len", len(btcPkSkeinHash))
-	fmt.Println("len", len(ethPkSkeinHash))
-
-	fmt.Println(len(ethPkSkeinHash))
-	l := make([]byte, 1024)
-	fmt.Println(len(l))
-	for i := 0; i < 512; i++ {
+	l := make([]byte, len(ethPkSkeinHash))
+	for i := 0; i < len(l); i++ {
 		l[i] = btcPkSkeinHash[i]
-		if i > 256 {
+		if i > 512 {
 			l[i] = ethPkSkeinHash[i]
 		}
 	}
-	//fmt.Println("len l", len(l))
-	//fmt.Println(hex.EncodeToString(btcPkSkeinHash))
-	//fmt.Println(hex.EncodeToString(ethPkSkeinHash))
 
-	masterPrivate := HashSkein1024(btcPkSkeinHash[:64])
-	masterPublicKey := HashSkein1024([]byte(masterPrivate[:64]))
-
+	masterPrivate := HashSkein1024(l[:128])
+	masterPublicKey := HashSkein1024([]byte(masterPrivate[:128]))
 	masterWallet.PrivateKey = hex.EncodeToString(masterPrivate)[:256]
 	masterWallet.PublicKey = hex.EncodeToString(masterPublicKey)[:43]
 
@@ -69,15 +59,33 @@ func (mw MasterWallet) ToString() {
 	fmt.Println("KAS Private Key", mw.PrivateKey)
 }
 
-func (mw MasterWallet) MasterAddressFromBtcEthPrivateKey(btcPk, ethPk string) string {
+func (mw MasterWallet) MasterAddressFromBtcEthPrivateKey(btcPk, ethPk string) *MasterWallet {
+	masterWallet := new(MasterWallet)
 	btcPkSkeinHash := HashSkein1024([]byte(btcPk))
-	//ethPkSkeinHash := HashSkein1024([]byte(ethPk))
+	ethPkSkeinHash := HashSkein1024([]byte(ethPk))
 
-	return string(btcPkSkeinHash)
+	l := make([]byte, len(ethPkSkeinHash))
+	for i := 0; i < len(l); i++ {
+		l[i] = btcPkSkeinHash[i]
+		if i > 512 {
+			l[i] = ethPkSkeinHash[i]
+		}
+	}
+
+	masterPrivate := HashSkein1024(l[:128])
+	masterPublicKey := HashSkein1024([]byte(masterPrivate[:128]))
+	masterWallet.PrivateKey = hex.EncodeToString(masterPrivate)[:256]
+	masterWallet.PublicKey = hex.EncodeToString(masterPublicKey)[:43]
+
+	return masterWallet
 }
 
-func (mw MasterWallet) MasterAddressFromPrivateKey(masterPrivate string) {
-
+func (mw MasterWallet) MasterAddressFromPrivateKey(masterPrivate []byte) *MasterWallet {
+	masterWallet := new(MasterWallet)
+	masterPublicKey := HashSkein1024([]byte(masterPrivate[:64]))
+	masterWallet.PrivateKey = hex.EncodeToString(masterPrivate)[:256]
+	masterWallet.PublicKey = hex.EncodeToString(masterPublicKey)[:43]
+	return masterWallet
 }
 
 func (mw MasterWallet) MasterAddress() string {
@@ -96,7 +104,7 @@ func HashSkein1024(data []byte) []byte {
 	sk := new(skein.Skein1024)
 	sk.Init(1024)
 	sk.Update(data)
-	outputBuffer := make([]byte, 512)
+	outputBuffer := make([]byte, 1024)
 	sk.Final(outputBuffer)
 	//return hex.EncodeToString(outputBuffer)
 	return outputBuffer
