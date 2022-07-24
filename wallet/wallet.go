@@ -2,11 +2,14 @@ package wallet
 
 import (
 	"crypto/ecdsa"
+	"crypto/rand"
 	"encoding/hex"
 	"errors"
 	"fmt"
 	"log"
 
+	"github.com/btcsuite/btcd/btcutil"
+	secp256k1 "github.com/decred/dcrd/dcrec/secp256k1/v4"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -28,6 +31,15 @@ type MasterWallet struct {
 }
 
 func NewMasterWallet() *MasterWallet {
+
+	pk, err := GenerateEcdsaPrivateKey()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//s := GenerateETHWalletFromPrivateKEy(pk)
+	//fmt.Println(s)
+
 	masterWallet := new(MasterWallet)
 	masterWallet.BtcWallet = GenerateBTCWallet()
 	masterWallet.EthWallet = GenerateETHWallet()
@@ -60,6 +72,7 @@ func (mw MasterWallet) ToString() {
 }
 
 func (mw MasterWallet) MasterAddressFromBtcEthPrivateKey(btcPk, ethPk string) *MasterWallet {
+
 	masterWallet := new(MasterWallet)
 	btcPkSkeinHash := HashSkein1024([]byte(btcPk))
 	ethPkSkeinHash := HashSkein1024([]byte(ethPk))
@@ -110,17 +123,33 @@ func HashSkein1024(data []byte) []byte {
 	return outputBuffer
 }
 
-func GenerateBTCPrivateKey() string {
-	wif, err := networks["btc"].CreatePrivateKey()
+// GeneratePrivateKey returns a private key that is suitable for use with
+// secp256k1.
+func GenerateEcdsaPrivateKey() (*ecdsa.PrivateKey, error) {
+	key, err := ecdsa.GenerateKey(crypto.S256(), rand.Reader)
+	if err != nil {
+		return nil, err
+	}
+	return key, nil
+}
+
+// GeneratePrivateKey returns a private key that is suitable for use with
+// secp256k1.
+func GeneratePrivateKey(pk *ecdsa.PrivateKey) (*secp256k1.PrivateKey, error) {
+	return secp256k1.PrivKeyFromBytes(pk.D.Bytes()), nil
+}
+
+func CreateBTCWifFromPk(pk *secp256k1.PrivateKey) *btcutil.WIF {
+	wif, err := networks["btc"].CreateWifFromPk(pk)
 	if err != nil {
 		log.Fatal(err)
 	}
-	pk := wif.String()
-	return pk
+	return wif
 }
 
 func GenerateBTCWallet() Wallet {
-	wif, err := networks["btc"].CreatePrivateKey()
+
+	wif, err := networks["btc"].CreateWif()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -149,6 +178,26 @@ func GenerateETHPrivateKey() string {
 		log.Fatal("cannot assert type: publicKey is not of type *ecdsa.PublicKey")
 	}
 	return hexutil.Encode(privateKeyBytes)[2:]
+}
+
+func GenerateETHWalletFromPrivateKEy(privateKey *ecdsa.PrivateKey) Wallet {
+	privateKeyBytes := crypto.FromECDSA(privateKey)
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		log.Fatal("cannot assert type: publicKey is not of type *ecdsa.PublicKey")
+	}
+
+	publicKeyBytes := crypto.FromECDSAPub(publicKeyECDSA)
+	address := crypto.PubkeyToAddress(*publicKeyECDSA).Hex()
+	hash := sha3.NewLegacyKeccak256()
+	hash.Write(publicKeyBytes[1:])
+
+	wallet := Wallet{
+		PublicKey:  address,
+		PrivateKey: hexutil.Encode(privateKeyBytes)[2:],
+	}
+	return wallet
 }
 
 func GenerateETHWallet() Wallet {

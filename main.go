@@ -54,7 +54,6 @@ func main() {
 	PrintUserBalance2(mw.PublicKey, 923)
 
 	mw.ToString()
-	
 
 	//sysHash := GetSysInfo()
 

@@ -6,6 +6,7 @@ import (
 	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/btcsuite/btcd/btcutil"
 	"github.com/btcsuite/btcd/chaincfg"
+	secp256k1 "github.com/decred/dcrd/dcrec/secp256k1/v4"
 )
 
 type Network struct {
@@ -29,8 +30,21 @@ func (network Network) GetNetworkParams() *chaincfg.Params {
 	return networkParams
 }
 
-func (network Network) CreatePrivateKey() (*btcutil.WIF, error) {
+func CreatePrivateKey() (*secp256k1.PrivateKey, error) {
 	secret, err := btcec.NewPrivateKey()
+	if err != nil {
+		return nil, err
+	}
+	return secret, err
+}
+
+func (network Network) CreateWifFromPk(secret *secp256k1.PrivateKey) (*btcutil.WIF, error) {
+
+	return btcutil.NewWIF(secret, network.GetNetworkParams(), true)
+}
+
+func (network Network) CreateWif() (*btcutil.WIF, error) {
+	secret, err := CreatePrivateKey()
 	if err != nil {
 		return nil, err
 	}
