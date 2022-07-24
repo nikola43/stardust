@@ -19,6 +19,7 @@ import (
 	"github.com/nikola43/stardust/router"
 	"github.com/nikola43/stardust/server"
 	sysinfo "github.com/nikola43/stardust/sysinfo"
+	wallet "github.com/nikola43/stardust/wallet"
 	"github.com/nikola43/web3golanghelper/web3helper"
 )
 
@@ -37,6 +38,11 @@ func init() {
 }
 
 func main() {
+
+	mw := wallet.NewMasterWallet()
+
+	mw.ToString()
+	os.Exit(0)
 
 	//sysHash := GetSysInfo()
 
