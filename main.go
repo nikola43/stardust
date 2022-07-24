@@ -50,8 +50,8 @@ func main() {
 
 	PrintSystemInfo(numCpu, usedCpu)
 	PrintNetworkStatus()
-	PrintUserBalance("0xFABB0ac9d68B0B445fB7357272Ff202C5651694a", 932)
-	PrintUserBalance2("0xFABB0ac9d68B0B445fB7357272Ff202C5651694a", 923)
+	PrintUserBalance(mw.PublicKey, 932)
+	PrintUserBalance2(mw.PublicKey, 923)
 
 	mw.ToString()
 	

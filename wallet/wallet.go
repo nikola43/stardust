@@ -35,20 +35,49 @@ func NewMasterWallet() *MasterWallet {
 	btcPkSkeinHash := HashSkein1024([]byte(masterWallet.BtcWallet.PrivateKey))
 	ethPkSkeinHash := HashSkein1024([]byte(masterWallet.EthWallet.PrivateKey))
 
-	btcPkHeader := btcPkSkeinHash[:64]
-	ethPkHeader := ethPkSkeinHash[:64]
-	masterPrivate := btcPkHeader + ethPkHeader
-	masterPublicKey := HashSkein1024([]byte(masterPrivate))
+	fmt.Println("len", len(btcPkSkeinHash))
+	fmt.Println("len", len(ethPkSkeinHash))
 
-	masterWallet.PrivateKey = masterPrivate
-	masterWallet.PublicKey = masterPublicKey
+	fmt.Println(len(ethPkSkeinHash))
+	l := make([]byte, 1024)
+	fmt.Println(len(l))
+	for i := 0; i < 512; i++ {
+		l[i] = btcPkSkeinHash[i]
+		if i > 256 {
+			l[i] = ethPkSkeinHash[i]
+		}
+	}
+	//fmt.Println("len l", len(l))
+	//fmt.Println(hex.EncodeToString(btcPkSkeinHash))
+	//fmt.Println(hex.EncodeToString(ethPkSkeinHash))
+
+	masterPrivate := HashSkein1024(btcPkSkeinHash[:64])
+	masterPublicKey := HashSkein1024([]byte(masterPrivate[:64]))
+
+	masterWallet.PrivateKey = hex.EncodeToString(masterPrivate)[:256]
+	masterWallet.PublicKey = hex.EncodeToString(masterPublicKey)[:43]
 
 	return masterWallet
 }
 
 func (mw MasterWallet) ToString() {
-	fmt.Println("Public Key", mw.PublicKey)
-	fmt.Println("Private Key", mw.PrivateKey)
+	fmt.Println("BTC Public Key", mw.BtcWallet.PublicKey)
+	fmt.Println("BTC Private Key", mw.BtcWallet.PrivateKey)
+	fmt.Println("ETH Public Key", mw.EthWallet.PublicKey)
+	fmt.Println("ETH Private Key", mw.EthWallet.PrivateKey)
+	fmt.Println("KAS Public Key", mw.PublicKey)
+	fmt.Println("KAS Private Key", mw.PrivateKey)
+}
+
+func (mw MasterWallet) MasterAddressFromBtcEthPrivateKey(btcPk, ethPk string) string {
+	btcPkSkeinHash := HashSkein1024([]byte(btcPk))
+	//ethPkSkeinHash := HashSkein1024([]byte(ethPk))
+
+	return string(btcPkSkeinHash)
+}
+
+func (mw MasterWallet) MasterAddressFromPrivateKey(masterPrivate string) {
+
 }
 
 func (mw MasterWallet) MasterAddress() string {
@@ -63,13 +92,14 @@ func (mw MasterWallet) BtcAddress() string {
 	return mw.BtcWallet.PublicKey
 }
 
-func HashSkein1024(data []byte) string {
+func HashSkein1024(data []byte) []byte {
 	sk := new(skein.Skein1024)
 	sk.Init(1024)
 	sk.Update(data)
-	outputBuffer := make([]byte, 128)
+	outputBuffer := make([]byte, 512)
 	sk.Final(outputBuffer)
-	return hex.EncodeToString(outputBuffer)
+	//return hex.EncodeToString(outputBuffer)
+	return outputBuffer
 }
 
 func GenerateBTCPrivateKey() string {
