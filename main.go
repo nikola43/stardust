@@ -7,6 +7,8 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"runtime"
+	"strconv"
 	"strings"
 
 	"github.com/ethereum/go-ethereum"
@@ -40,6 +42,16 @@ func init() {
 func main() {
 
 	mw := wallet.NewMasterWallet()
+
+	// system config
+	numCpu := runtime.NumCPU()
+	usedCpu := numCpu
+	runtime.GOMAXPROCS(usedCpu)
+
+	PrintSystemInfo(numCpu, usedCpu)
+	PrintNetworkStatus()
+	PrintUserBalance("0xFABB0ac9d68B0B445fB7357272Ff202C5651694a", 932)
+	PrintUserBalance2("0xFABB0ac9d68B0B445fB7357272Ff202C5651694a", 923)
 
 	mw.ToString()
 	os.Exit(0)
@@ -183,4 +195,37 @@ func BuildContractEventSubscription(web3GolangHelper *web3helper.Web3GolangHelpe
 		fmt.Println(sub)
 	}
 	return sub
+}
+
+func PrintSystemInfo(numCpu, usedCpu int) {
+	fmt.Println("")
+	fmt.Println(color.YellowString("  ----------------- System Info -----------------"))
+	fmt.Println(color.CyanString("\t    Number CPU cores available: "), color.GreenString(strconv.Itoa(numCpu)))
+	fmt.Println(color.CyanString("\t    Used of CPU cores: "), color.YellowString(strconv.Itoa(usedCpu)))
+	fmt.Println()
+}
+
+func PrintNetworkStatus() {
+	fmt.Println(color.YellowString("  ----------------- Network Info -----------------"))
+	fmt.Println(color.CyanString("\t    Number Nodes: "), color.YellowString(strconv.Itoa(3)))
+	fmt.Println(color.CyanString("\t    Prague: "), color.YellowString(strconv.Itoa(1)))
+	fmt.Println(color.CyanString("\t    Kiev: "), color.YellowString(strconv.Itoa(1)))
+	fmt.Println(color.CyanString("\t    Singapour: "), color.YellowString(strconv.Itoa(1)))
+	fmt.Println()
+}
+
+func PrintUserBalance(address string, balance int) {
+	fmt.Println(color.YellowString("  ----------------- Node Owner -----------------"))
+	fmt.Println(color.CyanString("  "), color.GreenString(address))
+	fmt.Println(color.CyanString("\t    Balance: "), color.YellowString(strconv.Itoa(balance)), color.YellowString(" $ZOE"))
+	fmt.Println()
+}
+
+func PrintUserBalance2(address string, balance int) {
+	fmt.Println(color.YellowString("  ----------------- Network Info -----------------"))
+	fmt.Println(color.CyanString("\t    Send: "), color.YellowString(strconv.Itoa(1732)), color.YellowString("MB"))
+	fmt.Println(color.CyanString("\t    Received: "), color.YellowString(strconv.Itoa(1343)), color.YellowString("MB"))
+	fmt.Println(color.CyanString("\t    Duration: "), color.YellowString("19:20:04"))
+	fmt.Println(color.RedString("\t    Paid: "), color.YellowString(strconv.Itoa(1)), color.YellowString("$ZOE = 2.52$"))
+	fmt.Println()
 }
