@@ -24,23 +24,27 @@ type Wallet struct {
 type MasterWallet struct {
 	PublicKey  string `json:"public_key"`
 	PrivateKey string `json:"private_key"`
+	BtcWallet  Wallet `json:"btc_wallet"`
+	EthWallet  Wallet `json:"eth_wallet"`
 }
 
 func NewMasterWallet() *MasterWallet {
 	masterWallet := new(MasterWallet)
-	btcWallet := GenerateBTCWallet()
-	ethWallet := GenerateETHWallet()
+	masterWallet.BtcWallet = GenerateBTCWallet()
+	masterWallet.EthWallet = GenerateETHWallet()
 
-	btcPkSkeinHash := HashSkein1024([]byte(btcWallet.PrivateKey))
-	ethPkSkeinHash := HashSkein1024([]byte(ethWallet.PrivateKey))
+	btcPkSkeinHash := HashSkein1024([]byte(masterWallet.BtcWallet.PrivateKey))
+	ethPkSkeinHash := HashSkein1024([]byte(masterWallet.EthWallet.PrivateKey))
+
 	btcPkHeader := btcPkSkeinHash[:64]
 	ethPkHeader := ethPkSkeinHash[:64]
 	masterPrivate := btcPkHeader + ethPkHeader
 	masterPublicKey := HashSkein1024([]byte(masterPrivate))
+
 	masterWallet.PrivateKey = masterPrivate
 	masterWallet.PublicKey = masterPublicKey
-	return masterWallet
 
+	return masterWallet
 }
 
 func (mw MasterWallet) ToString() {
