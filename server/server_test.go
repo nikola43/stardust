@@ -108,6 +108,17 @@ func TestListenPacketWriteFile(t *testing.T) {
 		t.Error()
 	}
 
+	sCipher := &crypto.GCM{
+		Passphrase: "6368616e676520746869732070617373776f726420746f206120736563726574",
+	}
+	sCipher.Init()
+
+	b, err := sCipher.Encrypt([]byte(dat))
+	if err != nil {
+		fmt.Println("Encrypt")
+		panic(err)
+	}
+
 	conn, err := net.Dial("udp", "192.168.0.19:8085")
 	if err != nil {
 		fmt.Println(err)
@@ -117,7 +128,7 @@ func TestListenPacketWriteFile(t *testing.T) {
 	if conn == nil {
 		t.Error()
 	}
-	fmt.Fprintf(conn, string(dat))
+	fmt.Fprintf(conn, string(b))
 
 }
 
