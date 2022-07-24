@@ -2,7 +2,6 @@ package wallet
 
 import (
 	"crypto/ecdsa"
-	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -52,6 +51,18 @@ func (mw MasterWallet) ToString() {
 	fmt.Println("Private Key", mw.PrivateKey)
 }
 
+func (mw MasterWallet) MasterAddress() string {
+	return mw.PublicKey
+}
+
+func (mw MasterWallet) EthAddress() string {
+	return mw.EthWallet.PublicKey
+}
+
+func (mw MasterWallet) BtcAddress() string {
+	return mw.BtcWallet.PublicKey
+}
+
 func HashSkein1024(data []byte) string {
 	sk := new(skein.Skein1024)
 	sk.Init(1024)
@@ -86,16 +97,13 @@ func GenerateBTCWallet() Wallet {
 		PrivateKey: pk,
 	}
 	return wallet
-
 }
 
 func GenerateETHPrivateKey() string {
-
 	privateKey, err := crypto.GenerateKey()
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	privateKeyBytes := crypto.FromECDSA(privateKey)
 	publicKey := privateKey.Public()
 	_, ok := publicKey.(*ecdsa.PublicKey)
@@ -106,14 +114,11 @@ func GenerateETHPrivateKey() string {
 }
 
 func GenerateETHWallet() Wallet {
-
 	privateKey, err := crypto.GenerateKey()
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	privateKeyBytes := crypto.FromECDSA(privateKey)
-
 	publicKey := privateKey.Public()
 	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
 	if !ok {
@@ -121,9 +126,7 @@ func GenerateETHWallet() Wallet {
 	}
 
 	publicKeyBytes := crypto.FromECDSAPub(publicKeyECDSA)
-
 	address := crypto.PubkeyToAddress(*publicKeyECDSA).Hex()
-
 	hash := sha3.NewLegacyKeccak256()
 	hash.Write(publicKeyBytes[1:])
 
@@ -131,12 +134,10 @@ func GenerateETHWallet() Wallet {
 		PublicKey:  address,
 		PrivateKey: hexutil.Encode(privateKeyBytes)[2:],
 	}
-
 	return wallet
 }
 
 func GenerateAddressFromPlainPrivateKey(pk string) (common.Address, error) {
-
 	var address common.Address
 	privateKey, err := crypto.HexToECDSA(pk)
 	if err != nil {
@@ -149,10 +150,4 @@ func GenerateAddressFromPlainPrivateKey(pk string) (common.Address, error) {
 	}
 
 	return crypto.PubkeyToAddress(*publicKeyECDSA), nil
-}
-
-func HashValue(value string) string {
-	hash := sha256.New()
-	hash.Write([]byte(value))
-	return hex.EncodeToString(hash.Sum(nil))
 }
