@@ -18,7 +18,7 @@ var (
 func init() {
 	flag.StringVar(&configFile, "config", "", "configuration file")
 	flag.StringVar(&update, "update", "", "update etc / file")
-	flag.BoolVar(&etcd, "etcd", false, "enable etcd")
+	flag.BoolVar(&etcd, "etcd", true, "enable etcd")
 	flag.Parse()
 }
 
