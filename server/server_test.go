@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net"
 	"testing"
 	"time"
@@ -12,6 +13,8 @@ import (
 	"github.com/nikola43/stardust/crypto"
 
 	"github.com/vishvananda/netlink"
+
+	sysinfo "github.com/nikola43/stardust/sysinfo"
 )
 
 func TestInitCrypto(t *testing.T) {
@@ -98,6 +101,23 @@ func TestListenPacketV3(t *testing.T) {
 		}
 	*/
 
+}
+
+func TestGetPublic(t *testing.T) {
+	publicIp, _ := sysinfo.GetPublicIP()
+	fmt.Println(publicIp)
+
+}
+
+func TestGetLocalIp(t *testing.T) {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+	fmt.Println(localAddr)
 }
 
 func TestListenPacketWriteFile(t *testing.T) {

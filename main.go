@@ -44,6 +44,17 @@ func init() {
 
 func main() {
 
+	publicIp, err := sysinfo.GetPublicIP()
+
+	if err != nil {
+		log.Printf("yamlFile.Get err   #%v ", err)
+	}
+
+	localIp := sysinfo.GeLocalIp()
+
+	fmt.Println(color.CyanString("Local Ip: "), color.YellowString(publicIp))
+	fmt.Println(color.CyanString("Public Ip: "), color.YellowString(localIp.String()))
+
 	if err := cli.New().Run(); err != nil {
 		fmt.Println(err)
 		os.Exit(0)

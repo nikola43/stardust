@@ -3,12 +3,22 @@ package sysinfo
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net"
+	"net/http"
 	"strconv"
 
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/mem"
 )
+
+type IP struct {
+	Query string
+}
 
 // SysInfo saves the basic system information
 type SysInfo struct {
@@ -61,4 +71,37 @@ func DecodeHex(s string) []byte {
 	}
 
 	return b
+}
+
+func GetPublicIP() (string, error) {
+	req, err := http.Get("http://ip-api.com/json/")
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+	defer req.Body.Close()
+
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+
+	var ip IP
+	json.Unmarshal(body, &ip)
+
+	return ip.Query, nil
+}
+
+// Get preferred outbound ip of this machine
+func GeLocalIp() net.IP {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+
+	return localAddr.IP
 }
