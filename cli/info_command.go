@@ -11,7 +11,7 @@ type InfoCommand struct {
 
 const (
 	infoCommand     = "info"
-	infoDescription = "get information about wallets, networks, nodes"
+	infoDescription = "get info about system, wallets, networks, nodes"
 	walletsInfo     = "wallets"
 	networkInfo     = "network"
 	nodeInfo        = "node"
