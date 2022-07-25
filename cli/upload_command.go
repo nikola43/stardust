@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"os"
 
 	"github.com/nikola43/stardust/crypto"
 )
@@ -31,8 +32,23 @@ func (c *UploadCommand) ExecCommand(ctx context.Context, args []string) error {
 		return ErrorFromString(fmt.Sprintf("file not found"))
 	}
 
+	fi, err := os.Stat(args[0])
+	if err != nil {
+		return ErrorFromString(fmt.Sprintf("file not found"))
+	}
+	// get the size
+	size := fi.Size()
+	if size == 0 {
+		return ErrorFromString(fmt.Sprintf("file corupted"))
+	}
+
 	if len(args) < 2 {
 		return ErrorFromString(fmt.Sprintf("server ip"))
+	}
+
+	isValid := checkIPAddress(args[1])
+	if !isValid {
+		return ErrorFromString(fmt.Sprintf("ip invalid format"))
 	}
 
 	if len(args) < 3 {
@@ -68,4 +84,14 @@ func (c *UploadCommand) ExecCommand(ctx context.Context, args []string) error {
 	fmt.Println(writtedBytes)
 	//return ErrorFromString(fmt.Sprintf("%s: invalid subcommand passed", uploadCommand))
 	return nil
+}
+
+func checkIPAddress(ip string) bool {
+	if net.ParseIP(ip) == nil {
+		fmt.Printf("IP Address: %s - Invalid\n", ip)
+		return false
+	} else {
+		fmt.Printf("IP Address: %s - Valid\n", ip)
+		return true
+	}
 }
