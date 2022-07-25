@@ -3,9 +3,7 @@ package cli
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"net"
 	"os"
 	"os/signal"
 	"runtime"
@@ -24,7 +22,6 @@ import (
 	"github.com/nikola43/stardust/sysinfo"
 	"github.com/nikola43/stardust/wallet"
 	"github.com/nikola43/web3golanghelper/web3helper"
-	"gopkg.in/yaml.v2"
 )
 
 type NodeCommand struct {
@@ -116,122 +113,6 @@ func RunServer() {
 	}
 	s.Run(ctx)
 	<-sig
-}
-
-type Conf struct {
-	Revision uint32 `yaml:"revision"`
-	Etcd     Etcd   `yaml:"etcd"`
-	Server   Server `yaml:"server"`
-	Crypto   Crypto `yaml:"crypto"`
-	Nodes    []Node `yaml:"nodes"`
-}
-
-type Etcd struct {
-	Endpoints []string `yaml:"endpoints"`
-	Timeout   uint32   `yaml:"timeout"`
-}
-
-type Server struct {
-	Keepalive uint32 `yaml:"keepalive"`
-	Insecure  bool   `yaml:"insecure"`
-	Mtu       uint32 `yaml:"mtu"`
-}
-
-type Crypto struct {
-	Type string `yaml:"type"`
-	Key  string `yaml:"key"`
-}
-
-type Node struct {
-	Node NodeInfo `yaml:"node"`
-}
-
-type NodeInfo struct {
-	Name             string   `yaml:"name"`
-	Address          string   `yaml:"address"`
-	PrivateAddresses []string `yaml:"privateAddresses"`
-	PrivateSubnets   []string `yaml:"privateSubnets"`
-}
-
-func GetConf() *Conf {
-	var c *Conf
-
-	yamlFile, err := ioutil.ReadFile("./stardust.yaml")
-	if err != nil {
-		log.Printf("yamlFile.Get err   #%v ", err)
-	}
-	err = yaml.Unmarshal(yamlFile, c)
-	if err != nil {
-		log.Fatalf("Unmarshal: %v", err)
-	}
-
-	return c
-}
-
-func WriteConf(localIp net.IP) {
-	c := GetConf()
-	var a []string
-	var b []string
-	a = append(a, "10.110.0.4/24")
-	b = append(b, "10.110.0.0/24")
-
-	name := "node" + (strconv.Itoa(len(c.Nodes) + 1))
-	config := Node{Node: NodeInfo{name, localIp.String(), a, b}}
-
-	c.Nodes = append(c.Nodes, config)
-
-	data, err := yaml.Marshal(&c)
-
-	if err != nil {
-
-		log.Fatal(err)
-	}
-
-	err2 := ioutil.WriteFile("stardust.yaml", data, 0)
-
-	if err2 != nil {
-
-		log.Fatal(err2)
-	}
-
-	fmt.Println("data written")
-}
-
-func CreateOwnConf(localIp net.IP) {
-	var c Conf
-	c.Revision = 1
-	c.Etcd.Endpoints = append(c.Etcd.Endpoints, "localhost:2379")
-	c.Etcd.Timeout = 5
-	c.Server.Keepalive = 10
-	c.Server.Insecure = false
-	c.Server.Mtu = 1300
-	c.Crypto.Type = "gcm"
-	c.Crypto.Key = "6368616e676520746869732070617373776f726420746f206120736563726574"
-
-	var a []string
-	var b []string
-	a = append(a, "10.110.0.4/24")
-	b = append(b, "10.110.0.0/24")
-
-	name := "node1"
-	config := Node{Node: NodeInfo{name, localIp.String(), a, b}}
-	c.Nodes = append(c.Nodes, config)
-
-	data, err := yaml.Marshal(&c)
-
-	if err != nil {
-
-		log.Fatal(err)
-	}
-
-	err2 := ioutil.WriteFile("stardustNew.yaml", data, 0)
-
-	if err2 != nil {
-
-		log.Fatal(err2)
-	}
-
-	fmt.Println("new network config created")
 }
 
 func InitServer(octx context.Context, notify *chan struct{}) {

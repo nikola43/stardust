@@ -4,8 +4,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"strconv"
 
 	"github.com/nikola43/stardust/config"
+	"github.com/nikola43/stardust/sysinfo"
+	"gopkg.in/yaml.v2"
 )
 
 var (
@@ -24,6 +29,41 @@ func init() {
 
 type CreateCommand struct {
 	args *Args
+}
+
+type Conf struct {
+	Revision uint32 `yaml:"revision"`
+	Etcd     Etcd   `yaml:"etcd"`
+	Server   Server `yaml:"server"`
+	Crypto   Crypto `yaml:"crypto"`
+	Nodes    []Node `yaml:"nodes"`
+}
+
+type Etcd struct {
+	Endpoints []string `yaml:"endpoints"`
+	Timeout   uint32   `yaml:"timeout"`
+}
+
+type Server struct {
+	Keepalive uint32 `yaml:"keepalive"`
+	Insecure  bool   `yaml:"insecure"`
+	Mtu       uint32 `yaml:"mtu"`
+}
+
+type Crypto struct {
+	Type string `yaml:"type"`
+	Key  string `yaml:"key"`
+}
+
+type Node struct {
+	Node NodeInfo `yaml:"node"`
+}
+
+type NodeInfo struct {
+	Name             string   `yaml:"name"`
+	Address          string   `yaml:"address"`
+	PrivateAddresses []string `yaml:"privateAddresses"`
+	PrivateSubnets   []string `yaml:"privateSubnets"`
 }
 
 /*
@@ -78,8 +118,56 @@ func (c *CreateCommand) createNetwork() error {
 		return nil
 	}
 
+	var config Conf
+	config.Revision = 1
+	config.Etcd.Endpoints = append(config.Etcd.Endpoints, "localhost:2379")
+	config.Etcd.Timeout = 5
+	config.Server.Keepalive = 10
+	config.Server.Insecure = false
+	config.Server.Mtu = 1300
+	config.Crypto.Type = "gcm"
+	config.Crypto.Key = "6368616e676520746869732070617373776f726420746f206120736563726574"
+
+	var a []string
+	var b []string
+	a = append(a, "10.110.0.4/24")
+	b = append(b, "10.110.0.0/24")
+
+	name := "node1"
+	nodes := Node{Node: NodeInfo{name, sysinfo.GeLocalIp().String(), a, b}}
+	config.Nodes = append(config.Nodes, nodes)
+
+	data, err := yaml.Marshal(&config)
+
+	if err != nil {
+
+		log.Fatal(err)
+	}
+
+	err2 := ioutil.WriteFile("stardustNew.yaml", data, 0)
+
+	if err2 != nil {
+
+		log.Fatal(err2)
+	}
+
 	fmt.Printf("create network type with number: %s", networkTypeNumbder)
 	return nil
+}
+
+func GetConf() *Conf {
+	var c *Conf
+
+	yamlFile, err := ioutil.ReadFile("./stardust.yaml")
+	if err != nil {
+		log.Printf("yamlFile.Get err   #%v ", err)
+	}
+	err = yaml.Unmarshal(yamlFile, c)
+	if err != nil {
+		log.Fatalf("Unmarshal: %v", err)
+	}
+
+	return c
 }
 
 func (c *CreateCommand) createNode() error {
@@ -88,7 +176,31 @@ func (c *CreateCommand) createNode() error {
 		return ErrorFromString(fmt.Sprintf("%s-node: invalid node hash", createCommand))
 	}
 
-	fmt.Println("create node")
+	config := GetConf()
+	var a []string
+	var b []string
+	a = append(a, "10.110.0.4/24")
+	b = append(b, "10.110.0.0/24")
+
+	name := "node" + (strconv.Itoa(len(config.Nodes) + 1))
+	nodes := Node{Node: NodeInfo{name, sysinfo.GeLocalIp().String(), a, b}}
+
+	config.Nodes = append(config.Nodes, nodes)
+
+	data, err := yaml.Marshal(&config)
+
+	if err != nil {
+
+		log.Fatal(err)
+	}
+
+	err2 := ioutil.WriteFile("stardust.yaml", data, 0)
+
+	if err2 != nil {
+
+		log.Fatal(err2)
+	}
+
 	return nil
 }
 
