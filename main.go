@@ -189,6 +189,43 @@ func WriteConf(localIp net.IP) {
 	fmt.Println("data written")
 }
 
+func CreateOwnConf(localIp net.IP) {
+	var c Conf
+	c.Revision = 1
+	c.Etcd.Endpoints = append(c.Etcd.Endpoints, "localhost:2379")
+	c.Etcd.Timeout = 5
+	c.Server.Keepalive = 10
+	c.Server.Insecure = false
+	c.Server.Mtu = 1300
+	c.Crypto.Type = "gcm"
+	c.Crypto.Key = "6368616e676520746869732070617373776f726420746f206120736563726574"
+
+	var a []string
+	var b []string
+	a = append(a, "10.110.0.4/24")
+	b = append(b, "10.110.0.0/24")
+
+	name := "node1"
+	config := Node{Node: NodeInfo{name, localIp.String(), a, b}}
+	c.Nodes = append(c.Nodes, config)
+
+	data, err := yaml.Marshal(&c)
+
+	if err != nil {
+
+		log.Fatal(err)
+	}
+
+	err2 := ioutil.WriteFile("stardustNew.yaml", data, 0)
+
+	if err2 != nil {
+
+		log.Fatal(err2)
+	}
+
+	fmt.Println("new network config created")
+}
+
 func InitServer(octx context.Context, notify *chan struct{}) {
 	r := router.New(octx)
 	s := server.Server{
