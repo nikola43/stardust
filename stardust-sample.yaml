@@ -1,7 +1,7 @@
 revision: 1
 etcd:
   endpoints:
-    - localhost:2379
+    - 146.190.239.223:2379
   timeout: 5
 
 server:
