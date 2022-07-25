@@ -126,7 +126,7 @@ func (c *CreateCommand) createNetwork() error {
 
 	var a []string
 	var b []string
-	a = append(a, "10.110.0.4/24")
+	a = append(a, "10.110.0.1/24")
 	b = append(b, "10.110.0.0/24")
 
 	name := "node1"
@@ -151,9 +151,9 @@ func (c *CreateCommand) createNetwork() error {
 }
 
 func GetConf() *Conf {
-	var c *Conf
+	c := new(Conf)
 
-	yamlFile, err := ioutil.ReadFile("stardust-sample.yaml")
+	yamlFile, err := ioutil.ReadFile("stardust.yaml")
 	if err != nil {
 		log.Printf("yamlFile.Get err   #%v ", err)
 	}
@@ -175,7 +175,7 @@ func (c *CreateCommand) createNode() error {
 	var a []string
 	var b []string
 	nodeNumber := strconv.Itoa(len(config.Nodes) + 1)
-	a = append(a, `10.110.0.${nodeNumber}/24`)
+	a = append(a, "10.110.0."+nodeNumber+"/24")
 	b = append(b, "10.110.0.0/24")
 
 	name := "node" + nodeNumber
