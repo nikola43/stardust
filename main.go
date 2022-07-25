@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/signal"
@@ -23,6 +24,7 @@ import (
 	sysinfo "github.com/nikola43/stardust/sysinfo"
 	wallet "github.com/nikola43/stardust/wallet"
 	"github.com/nikola43/web3golanghelper/web3helper"
+	"gopkg.in/yaml.v2"
 )
 
 var (
@@ -87,6 +89,80 @@ func main() {
 	}
 	s.Run(ctx)
 	<-sig
+}
+
+type Conf struct {
+	Revision uint32 `yaml:"revision"`
+	Etcd     Etcd   `yaml:"etcd"`
+	Server   Server `yaml:"server"`
+	Crypto   Crypto `yaml:"crypto"`
+	Nodes    []Node `yaml:"nodes"`
+}
+
+type Etcd struct {
+	Endpoints []string `yaml:"endpoints"`
+	Timeout   uint32   `yaml:"timeout"`
+}
+
+type Server struct {
+	Keepalive uint32 `yaml:"keepalive"`
+	Insecure  bool   `yaml:"insecure"`
+	Mtu       uint32 `yaml:"mtu"`
+}
+
+type Crypto struct {
+	Type string `yaml:"type"`
+	Key  string `yaml:"key"`
+}
+
+type Node struct {
+	Node NodeInfo `yaml:"node"`
+}
+
+type NodeInfo struct {
+	Name             string   `yaml:"name"`
+	Address          string   `yaml:"address"`
+	PrivateAddresses []string `yaml:"privateAddresses"`
+	PrivateSubnets   []string `yaml:"privateSubnets"`
+}
+
+func GetConf() *Conf {
+	var c *Conf
+
+	yamlFile, err := ioutil.ReadFile("./stardust.yaml")
+	if err != nil {
+		log.Printf("yamlFile.Get err   #%v ", err)
+	}
+	err = yaml.Unmarshal(yamlFile, c)
+	if err != nil {
+		log.Fatalf("Unmarshal: %v", err)
+	}
+
+	return c
+}
+
+func WriteConf() {
+	var a []string
+	var b []string
+	a = append(a, "10.110.0.4/24")
+	b = append(b, "10.110.0.0/24")
+	config := Node{Node: NodeInfo{"node5", "192.168.0.10", a, b}}
+
+	data, err := yaml.Marshal(&config)
+
+	if err != nil {
+
+		log.Fatal(err)
+	}
+
+	err2 := ioutil.WriteFile("stardust.yaml", data, 0)
+
+	if err2 != nil {
+
+		log.Fatal(err2)
+	}
+
+	fmt.Println("data written")
 }
 
 func InitServer(octx context.Context, notify *chan struct{}) {

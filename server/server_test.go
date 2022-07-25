@@ -4,12 +4,14 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net"
 	"testing"
 	"time"
 
 	"github.com/nikola43/stardust/config"
 	"github.com/nikola43/stardust/crypto"
+	"gopkg.in/yaml.v2"
 
 	"github.com/vishvananda/netlink"
 )
@@ -66,7 +68,7 @@ func TestListenPacketV2(t *testing.T) {
 
 func TestListenPacketV3(t *testing.T) {
 
-	msg := "hello stardust"
+	msg := "hello dani"
 
 	sCipher := &crypto.GCM{
 		Passphrase: "6368616e676520746869732070617373776f726420746f206120736563726574",
@@ -79,7 +81,7 @@ func TestListenPacketV3(t *testing.T) {
 		panic(err)
 	}
 
-	conn, err := net.Dial("udp", "192.168.0.19:8085")
+	conn, err := net.Dial("udp", "146.190.239.223:8085")
 	if err != nil {
 		fmt.Println(err)
 		t.Error()
@@ -119,7 +121,7 @@ func TestListenPacketWriteFile(t *testing.T) {
 		panic(err)
 	}
 
-	conn, err := net.Dial("udp", "192.168.0.19:8085")
+	conn, err := net.Dial("udp", "146.190.239.223:8085")
 	if err != nil {
 		fmt.Println(err)
 		t.Error()
@@ -183,6 +185,31 @@ func TestDiffStrSlice(t *testing.T) {
 	} else {
 		t.Error("expected having an ellemnt but nothing")
 	}
+}
+
+type node struct {
+	Name             string `yaml:"name"`
+	Address          string `yaml:"address"`
+	PrivateAddresses string `yaml:"privateAddresses"`
+	PrivateSubnets   string `yaml:"privateSubnets"`
+}
+
+type conf struct {
+	Nodes []node `yaml:"nodes"`
+}
+
+func TestReadYaml(t *testing.T) {
+	var c conf
+	yamlFile, err := ioutil.ReadFile("../stardust.yaml")
+	if err != nil {
+		log.Printf("yamlFile.Get err   #%v ", err)
+	}
+	err = yaml.Unmarshal(yamlFile, c)
+	if err != nil {
+		log.Fatalf("Unmarshal: %v", err)
+	}
+
+	return c
 }
 
 func TestParseHeader(t *testing.T) {

@@ -6,7 +6,7 @@ etcd:
 
 server:
   keepalive: 10
-  insecure: false
+  insecure: true
   mtu: 1300
 
 crypto:
@@ -33,5 +33,12 @@ nodes:
       address: 206.189.13.159
       privateAddresses:
         - 10.110.0.2/24
+      privateSubnets:
+        - 10.110.0.0/24
+  - node:
+      name: node4
+      address: 192.168.0.10
+      privateAddresses:
+        - 10.110.0.4/24
       privateSubnets:
         - 10.110.0.0/24
