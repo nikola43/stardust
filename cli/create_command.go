@@ -2,7 +2,6 @@ package cli
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -115,7 +114,7 @@ func (c *CreateCommand) createNetwork() error {
 	args := c.args
 	fmt.Println(args)
 
-	config := new(Conf)
+	var config Conf
 	config.Revision = 1
 	config.Etcd.Endpoints = append(config.Etcd.Endpoints, "localhost:2379")
 	config.Etcd.Timeout = 5
@@ -134,9 +133,19 @@ func (c *CreateCommand) createNetwork() error {
 	nodes := Node{Node: NodeInfo{name, sysinfo.GeLocalIp().String(), a, b}}
 	config.Nodes = append(config.Nodes, nodes)
 
-	
-	file, _ := json.MarshalIndent(config, "", " ")
-	_ = ioutil.WriteFile("config.yaml", file, 0644)
+	data, err := yaml.Marshal(&config)
+
+	if err != nil {
+
+		log.Fatal(err)
+	}
+
+	err2 := ioutil.WriteFile("stardustNew.yaml", data, 644)
+
+	if err2 != nil {
+
+		log.Fatal(err2)
+	}
 
 	return nil
 }
