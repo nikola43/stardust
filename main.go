@@ -18,6 +18,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/fatih/color"
 	"github.com/nikola43/stardust/NodeManagerV83"
+	"github.com/nikola43/stardust/cli"
 	"github.com/nikola43/stardust/config"
 	"github.com/nikola43/stardust/router"
 	"github.com/nikola43/stardust/server"
@@ -42,6 +43,12 @@ func init() {
 }
 
 func main() {
+
+	if err := cli.New().Run(); err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
+	os.Exit(0)
 
 	mw := wallet.NewMasterWallet()
 
