@@ -71,7 +71,7 @@ func (c *NodeCommand) ExecCommand(ctx context.Context, args []string) error {
 	case Run:
 		c.Run()
 	case UpdateEtcd:
-		c.Run()
+		c.UpdateEtcd()
 	}
 
 	return nil
