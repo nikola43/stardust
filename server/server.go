@@ -332,9 +332,9 @@ func (t *tun) reader(ctx context.Context, ifce *water.Interface) {
 		if err != nil {
 			panic(err)
 		}
-		//receivedBytes += n
-		//fmt.Println(color.CyanString("Total Receive: "), HumanFileSize(float64(receivedBytes)))
-
+		sendBytes += n
+		fmt.Println(color.CyanString(" Received: "), HumanFileSize(float64(receivedBytes)))
+		fmt.Println(color.CyanString(" Send: "), HumanFileSize(float64(sendBytes)))
 		select {
 		case t.read <- b[:n]:
 		case <-ctx.Done():
@@ -352,15 +352,15 @@ func (t *tun) writer(ctx context.Context, ifce *water.Interface) {
 	for {
 		select {
 		case b = <-t.write:
-			fmt.Println("b", b)
+			//fmt.Println("b", b)
 			n, err := ifce.Write(b)
 			if err != nil {
 				panic(err)
 			}
-			fmt.Println("writted", n)
-			sendBytes += n
-			fmt.Println(color.CyanString("Total Received: "), HumanFileSize(float64(sendBytes)))
 
+			receivedBytes += n
+			fmt.Println(color.CyanString(" Received: "), HumanFileSize(float64(receivedBytes)))
+			fmt.Println(color.CyanString(" Send: "), HumanFileSize(float64(sendBytes)))
 		case <-ctx.Done():
 			return
 		}
@@ -483,7 +483,7 @@ func Round(val float64, roundOn float64, places int) (newVal float64) {
 }
 
 func HumanFileSize(size float64) string {
-	fmt.Println(size)
+	//fmt.Println(size)
 	suffixes[0] = "B"
 	suffixes[1] = "KB"
 	suffixes[2] = "MB"
@@ -492,7 +492,7 @@ func HumanFileSize(size float64) string {
 
 	base := math.Log(size) / math.Log(1024)
 	getSize := Round(math.Pow(1024, base-math.Floor(base)), .5, 2)
-	fmt.Println(int(math.Floor(base)))
+	//fmt.Println(int(math.Floor(base)))
 	getSuffix := suffixes[int(math.Floor(base))]
 	return strconv.FormatFloat(getSize, 'f', -1, 64) + " " + string(getSuffix)
 }
