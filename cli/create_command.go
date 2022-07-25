@@ -166,11 +166,6 @@ func GetConf() *Conf {
 }
 
 func (c *CreateCommand) createNode() error {
-	nodeHash := c.args.pop()
-	if nodeHash == "" {
-		return ErrorFromString(fmt.Sprintf("%s-node: invalid node hash", createCommand))
-	}
-
 	config := GetConf()
 	var a []string
 	var b []string
