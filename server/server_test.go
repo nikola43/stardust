@@ -64,6 +64,7 @@ func TestListenPacketV2(t *testing.T) {
 		t.Error()
 	}
 	fmt.Fprintf(conn, msg)
+	fmt.Println("sd")
 
 }
 
@@ -82,7 +83,7 @@ func TestListenPacketV3(t *testing.T) {
 		panic(err)
 	}
 
-	conn, err := net.Dial("udp", "146.190.239.223:8085")
+	conn, err := net.Dial("udp", "192.168.0.19:8085")
 	if err != nil {
 		fmt.Println(err)
 		t.Error()
@@ -91,16 +92,12 @@ func TestListenPacketV3(t *testing.T) {
 	if conn == nil {
 		t.Error()
 	}
-	fmt.Fprintf(conn, string(b))
-
-	/*
-		_, err = conn.WriteTo(b, rAddr)
-		if err != nil {
-			fmt.Println("WriteTo")
-			panic(err)
-		}
-	*/
-
+	n, err := fmt.Fprintf(conn, string(b))
+	if err != nil {
+		fmt.Println(err)
+		t.Error()
+	}
+	fmt.Println(n)
 }
 
 func TestGetPublic(t *testing.T) {
@@ -139,7 +136,7 @@ func TestListenPacketWriteFile(t *testing.T) {
 		panic(err)
 	}
 
-	conn, err := net.Dial("udp", "146.190.239.223:8085")
+	conn, err := net.Dial("udp", "192.168.0.19:8085")
 	if err != nil {
 		fmt.Println(err)
 		t.Error()
@@ -148,8 +145,9 @@ func TestListenPacketWriteFile(t *testing.T) {
 	if conn == nil {
 		t.Error()
 	}
-	fmt.Fprintf(conn, string(b))
-
+	n, err := fmt.Fprintf(conn, string(b))
+	fmt.Println(n)
+	fmt.Println(err)
 }
 
 func TestListenPacket(t *testing.T) {
