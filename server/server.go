@@ -333,7 +333,7 @@ func (t *tun) reader(ctx context.Context, ifce *water.Interface) {
 			panic(err)
 		}
 		sendBytes += n
-		fmt.Println(color.CyanString(" Received: "), HumanFileSize(float64(receivedBytes)))
+		//fmt.Println(color.CyanString(" Received: "), HumanFileSize(float64(receivedBytes)))
 		fmt.Println(color.CyanString(" Send: "), HumanFileSize(float64(sendBytes)))
 		select {
 		case t.read <- b[:n]:
@@ -360,7 +360,7 @@ func (t *tun) writer(ctx context.Context, ifce *water.Interface) {
 
 			receivedBytes += n
 			fmt.Println(color.CyanString(" Received: "), HumanFileSize(float64(receivedBytes)))
-			fmt.Println(color.CyanString(" Send: "), HumanFileSize(float64(sendBytes)))
+			//fmt.Println(color.CyanString(" Send: "), HumanFileSize(float64(sendBytes)))
 		case <-ctx.Done():
 			return
 		}
