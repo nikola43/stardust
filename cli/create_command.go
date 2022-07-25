@@ -111,12 +111,8 @@ func (c *CreateCommand) createEthWallet() error {
 }
 
 func (c *CreateCommand) createNetwork() error {
-	networkTypeNumbder := c.args.pop()
-	if networkTypeNumbder == "" {
-		fmt.Println("create network")
-
-		return nil
-	}
+	args := c.args
+	fmt.Println(args)
 
 	var config Conf
 	config.Revision = 1
@@ -151,7 +147,6 @@ func (c *CreateCommand) createNetwork() error {
 		log.Fatal(err2)
 	}
 
-	fmt.Printf("create network type with number: %s", networkTypeNumbder)
 	return nil
 }
 
