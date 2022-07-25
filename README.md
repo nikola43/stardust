@@ -79,7 +79,7 @@ stardust -config stardust.conf
      - privateSubnets - sets reachable subnet(s) from currect node
 
 ### Configuration with [etcd](https://github.com/etcd-io/etcd)
-![Alt text](/docs/imgs/stardustetcd.png?raw=true "stardust etcd")
+![Alt text](/docs/imgs/stardustnetcd.png?raw=true "stardust etcd")
 
 [sample configuration](https://github.com/nikola43/stardust/blob/master/stardust.yaml)
 #### Run with etcd
