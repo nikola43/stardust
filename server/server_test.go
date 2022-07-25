@@ -4,14 +4,12 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net"
 	"testing"
 	"time"
 
 	"github.com/nikola43/stardust/config"
 	"github.com/nikola43/stardust/crypto"
-	"gopkg.in/yaml.v2"
 
 	"github.com/vishvananda/netlink"
 )
@@ -185,31 +183,6 @@ func TestDiffStrSlice(t *testing.T) {
 	} else {
 		t.Error("expected having an ellemnt but nothing")
 	}
-}
-
-type node struct {
-	Name             string `yaml:"name"`
-	Address          string `yaml:"address"`
-	PrivateAddresses string `yaml:"privateAddresses"`
-	PrivateSubnets   string `yaml:"privateSubnets"`
-}
-
-type conf struct {
-	Nodes []node `yaml:"nodes"`
-}
-
-func TestReadYaml(t *testing.T) {
-	var c conf
-	yamlFile, err := ioutil.ReadFile("../stardust.yaml")
-	if err != nil {
-		log.Printf("yamlFile.Get err   #%v ", err)
-	}
-	err = yaml.Unmarshal(yamlFile, c)
-	if err != nil {
-		log.Fatalf("Unmarshal: %v", err)
-	}
-
-	return c
 }
 
 func TestParseHeader(t *testing.T) {
