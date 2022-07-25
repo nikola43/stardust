@@ -32,6 +32,7 @@ func (f *file) load() (*Config, error) {
 		}
 	}
 
+	configFile = "stardust.yaml"
 	if configFile == "" {
 		return nil, errors.New("config file not found")
 	}
