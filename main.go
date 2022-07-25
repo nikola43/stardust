@@ -48,7 +48,7 @@ func main() {
 		fmt.Println(err)
 		os.Exit(0)
 	}
-	os.Exit(0)
+	
 
 	mw := wallet.NewMasterWallet()
 
