@@ -149,13 +149,18 @@ func GetConf() *Conf {
 }
 
 func WriteConf() {
+	c := GetConf()
 	var a []string
 	var b []string
 	a = append(a, "10.110.0.4/24")
 	b = append(b, "10.110.0.0/24")
-	config := Node{Node: NodeInfo{"node5", "192.168.0.10", a, b}}
 
-	data, err := yaml.Marshal(&config)
+	name := "node" + (strconv.Itoa(len(c.Nodes) + 1))
+	config := Node{Node: NodeInfo{name, "192.168.0.10", a, b}}
+
+	c.Nodes = append(c.Nodes, config)
+
+	data, err := yaml.Marshal(&c)
 
 	if err != nil {
 
