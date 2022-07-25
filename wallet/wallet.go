@@ -65,12 +65,11 @@ func NewMasterWallet() *MasterWallet {
 	log.Println(strings.ToUpper(Public(string(token))))
 
 	//pk := Private(string(token))
-	
+
 	pk, err := GenerateEcdsaPrivateKey()
 	if err != nil {
 		log.Fatal(err)
 	}
-	
 
 	//s := GenerateETHWalletFromPrivateKEy(pk)
 	//fmt.Println(s)
