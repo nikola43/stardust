@@ -114,7 +114,7 @@ func (c *CreateCommand) createNetwork() error {
 	args := c.args
 	fmt.Println(args)
 
-	var config Conf
+	config := new(Conf)
 	config.Revision = 1
 	config.Etcd.Endpoints = append(config.Etcd.Endpoints, "localhost:2379")
 	config.Etcd.Timeout = 5
