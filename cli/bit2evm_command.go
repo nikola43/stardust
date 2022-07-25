@@ -2,11 +2,16 @@ package cli
 
 import (
 	"context"
+	"crypto/ecdsa"
+	"crypto/sha256"
+	"encoding/hex"
+	"errors"
 	"fmt"
 	"log"
 
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/fatih/color"
-	skein "github.com/nikola43/stardust/crypto"
 	wallet "github.com/nikola43/stardust/wallet"
 )
 
@@ -41,15 +46,41 @@ func (c *Bit2EvmCommand) ExecCommand(ctx context.Context, args []string) error {
 		log.Fatal(err)
 	}
 
-	btcDerivedPrivateKey := skein.HashSkein1024(w.PrivateKey[:128])
-	btcDerivedPublicKey, err := wallet.GenerateAddressFromPlainPrivateKey(btcDerivedPrivateKey)
+	fmt.Println(color.CyanString("BTC Public Key: "), color.YellowString(w.PublicKey))
+	fmt.Println(color.CyanString("BTC Private Key: "), color.YellowString(w.PrivateKey))
+	fmt.Println()
+
+	ethDerivedPrivateKey := HashValue(w.PrivateKey)
+	ethDerivedPublicKey, err := GenerateAddressFromPlainPrivateKey(ethDerivedPrivateKey)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(color.CyanString("BTC Derived Public Key: "), color.YellowString(btcDerivedPublicKey.Hex()))
-	fmt.Println(color.CyanString("BTC Derived Private Key: "), color.YellowString(btcDerivedPrivateKey))
+	fmt.Println(color.CyanString("ETH Derived Public Key: "), color.YellowString(ethDerivedPublicKey.Hex()))
+	fmt.Println(color.CyanString("ETH Derived Private Key: "), color.YellowString(ethDerivedPrivateKey))
 	fmt.Println()
 
 	return nil
+}
+
+func GenerateAddressFromPlainPrivateKey(pk string) (common.Address, error) {
+
+	var address common.Address
+	privateKey, err := crypto.HexToECDSA(pk)
+	if err != nil {
+		return address, err
+	}
+
+	publicKeyECDSA, ok := privateKey.Public().(*ecdsa.PublicKey)
+	if !ok {
+		return address, errors.New("error casting public key to ECDSA")
+	}
+
+	return crypto.PubkeyToAddress(*publicKeyECDSA), nil
+}
+
+func HashValue(value string) string {
+	hash := sha256.New()
+	hash.Write([]byte(value))
+	return hex.EncodeToString(hash.Sum(nil))
 }

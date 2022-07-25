@@ -7,7 +7,7 @@ import (
 
 	"github.com/fatih/color"
 	skein "github.com/nikola43/stardust/crypto"
-	wallet "github.com/nikola43/stardust/wallet"
+	"github.com/nikola43/stardust/wallet"
 )
 
 type Evm2BitCommand struct {
@@ -32,17 +32,18 @@ func (c *Evm2BitCommand) ExecCommand(ctx context.Context, args []string) error {
 	if len(args) == 0 {
 		return ErrorFromString(fmt.Sprintf("file not found"))
 	}
-	wif, err := wallet.ImportWIF(args[0])
-	if err != nil {
-		log.Fatal(err)
-	}
-	w := wallet.GenerateBTCWalletFromWIF(wif)
-	if err != nil {
-		log.Fatal(err)
-	}
+	fmt.Println(color.YellowString("BTC to ETH"))
 
-	btcDerivedPrivateKey := skein.HashSkein1024(w.PrivateKey[:128])
-	btcDerivedPublicKey, err := wallet.GenerateAddressFromPlainPrivateKey(btcDerivedPrivateKey)
+	ethWallet, err := wallet.GenerateETHWalletFromPlainPrivateKey(args[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(color.CyanString("ETH Public Key: "), color.YellowString(ethWallet.PublicKey))
+	fmt.Println(color.CyanString("ETH Private Key: "), color.YellowString(ethWallet.PrivateKey))
+	fmt.Println()
+
+	btcDerivedPrivateKey := HashValue(ethWallet.PrivateKey)
+	btcDerivedPublicKey, err := GenerateAddressFromPlainPrivateKey(btcDerivedPrivateKey)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,4 +53,13 @@ func (c *Evm2BitCommand) ExecCommand(ctx context.Context, args []string) error {
 	fmt.Println()
 
 	return nil
+}
+func HashSkein1024(data []byte) []byte {
+	sk := new(skein.Skein1024)
+	sk.Init(1024)
+	sk.Update(data)
+	outputBuffer := make([]byte, 1024)
+	sk.Final(outputBuffer)
+	//return hex.EncodeToString(outputBuffer)
+	return outputBuffer
 }
