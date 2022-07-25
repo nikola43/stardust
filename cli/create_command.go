@@ -140,7 +140,7 @@ func (c *CreateCommand) createNetwork() error {
 		log.Fatal(err)
 	}
 
-	err2 := ioutil.WriteFile("stardustNew.yaml", data, 644)
+	err2 := ioutil.WriteFile("stardust.yaml", data, 755)
 
 	if err2 != nil {
 
