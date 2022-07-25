@@ -359,7 +359,7 @@ func (t *tun) writer(ctx context.Context, ifce *water.Interface) {
 			}
 			fmt.Println("writted", n)
 			sendBytes += n
-			fmt.Println(color.CyanString("Total Writted: "), HumanFileSize(float64(sendBytes)))
+			fmt.Println(color.CyanString("Total Received: "), HumanFileSize(float64(sendBytes)))
 
 		case <-ctx.Done():
 			return

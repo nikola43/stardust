@@ -64,6 +64,7 @@ func TestListenPacketV2(t *testing.T) {
 		t.Error()
 	}
 	fmt.Fprintf(conn, msg)
+	fmt.Println("sd")
 
 }
 
@@ -91,16 +92,12 @@ func TestListenPacketV3(t *testing.T) {
 	if conn == nil {
 		t.Error()
 	}
-	fmt.Fprintf(conn, string(b))
-
-	/*
-		_, err = conn.WriteTo(b, rAddr)
-		if err != nil {
-			fmt.Println("WriteTo")
-			panic(err)
-		}
-	*/
-
+	n, err := fmt.Fprintf(conn, string(b))
+	if err != nil {
+		fmt.Println(err)
+		t.Error()
+	}
+	fmt.Println(n)
 }
 
 func TestGetPublic(t *testing.T) {
@@ -148,7 +145,7 @@ func TestListenPacketWriteFile(t *testing.T) {
 	if conn == nil {
 		t.Error()
 	}
-	n, err :=  fmt.Fprintf(conn, string(b))
+	n, err := fmt.Fprintf(conn, string(b))
 	fmt.Println(n)
 	fmt.Println(err)
 }
