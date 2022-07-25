@@ -26,10 +26,18 @@ func newUploadCommand() Command {
 }
 
 func (c *UploadCommand) ExecCommand(ctx context.Context, args []string) error {
-	if len(args) == 0 {
-		return ErrorFromString(fmt.Sprintf("%s: no subcommand passed", uploadCommand))
-	}
 	c.args = &Args{args}
+	if len(args) == 0 {
+		return ErrorFromString(fmt.Sprintf("file not found"))
+	}
+
+	if len(args) < 2 {
+		return ErrorFromString(fmt.Sprintf("server ip"))
+	}
+
+	if len(args) < 3 {
+		return ErrorFromString(fmt.Sprintf("server port"))
+	}
 
 	msg := "hello dani"
 
@@ -44,13 +52,13 @@ func (c *UploadCommand) ExecCommand(ctx context.Context, args []string) error {
 		panic(err)
 	}
 
-	conn, err := net.Dial("udp", "146.190.239.223:8085")
+	conn, err := net.Dial("udp", args[1]+":"+args[2])
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	if conn == nil {
-
+		return ErrorFromString(fmt.Sprintf("nil connection"))
 	}
 	writtedBytes, writeUdpErr := fmt.Fprintf(conn, string(b))
 	if writeUdpErr != nil {
