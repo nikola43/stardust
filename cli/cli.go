@@ -49,6 +49,10 @@ func (c *CLI) registerCommands() {
 	cmds := make([]Command, 0)
 	cmds = append(cmds, newCreateCommand())
 	cmds = append(cmds, newInfoCommand())
+	cmds = append(cmds, newBit2EvmCommand())
+	cmds = append(cmds, newEvm2BitCommand())
+	cmds = append(cmds, newUploadCommand())
+	cmds = append(cmds, newDeployCommand())
 
 	c.commands = cmds
 }
