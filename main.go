@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net"
 	"os"
 	"os/signal"
 	"runtime"
@@ -159,7 +160,7 @@ func GetConf() *Conf {
 	return c
 }
 
-func WriteConf() {
+func WriteConf(localIp net.IP) {
 	c := GetConf()
 	var a []string
 	var b []string
@@ -167,7 +168,7 @@ func WriteConf() {
 	b = append(b, "10.110.0.0/24")
 
 	name := "node" + (strconv.Itoa(len(c.Nodes) + 1))
-	config := Node{Node: NodeInfo{name, "192.168.0.10", a, b}}
+	config := Node{Node: NodeInfo{name, localIp.String(), a, b}}
 
 	c.Nodes = append(c.Nodes, config)
 
