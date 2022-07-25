@@ -134,14 +134,9 @@ func (c *CreateCommand) createNetwork() error {
 	nodes := Node{Node: NodeInfo{name, sysinfo.GeLocalIp().String(), a, b}}
 	config.Nodes = append(config.Nodes, nodes)
 
-	data, err := yaml.Marshal(&config)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	file, _ := json.MarshalIndent(data, "", " ")
-
-	_ = ioutil.WriteFile("test.json", file, 0644)
+	
+	file, _ := json.MarshalIndent(config, "", " ")
+	_ = ioutil.WriteFile("config.yaml", file, 0644)
 
 	return nil
 }
