@@ -2,16 +2,11 @@ package cli
 
 import (
 	"context"
-	"crypto/ecdsa"
-	"crypto/sha256"
-	"encoding/hex"
-	"errors"
 	"fmt"
 	"log"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/fatih/color"
+	skein "github.com/nikola43/stardust/crypto"
 	wallet "github.com/nikola43/stardust/wallet"
 )
 
@@ -21,7 +16,7 @@ type Bit2EvmCommand struct {
 
 const (
 	bit2evmCommand     = "bit2evm"
-	bit2evmDescription = "generate ETH ublic and private key from BTC private WIF"
+	bit2evmDescription = "generate BTC public and private key from ETH private key"
 )
 
 func newBit2EvmCommand() Command {
@@ -37,46 +32,24 @@ func (c *Bit2EvmCommand) ExecCommand(ctx context.Context, args []string) error {
 	if len(args) == 0 {
 		return ErrorFromString(fmt.Sprintf("file not found"))
 	}
-
-	pkWIF, err := wallet.ImportWIF(args[1])
+	wif, err := wallet.ImportWIF(args[0])
 	if err != nil {
-		fmt.Println(err)
-		return ErrorFromString(err.Error())
+		log.Fatal(err)
 	}
-
-	w := wallet.GenerateBTCWalletFromWIF(pkWIF)
-
-	ethDerivedPrivateKey := HashValue(w.PrivateKey)
-	ethDerivedPublicKey, err := GenerateAddressFromPlainPrivateKey(ethDerivedPrivateKey)
+	w := wallet.GenerateBTCWalletFromWIF(wif)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(color.CyanString("ETH Derived Public Key: "), color.YellowString(ethDerivedPublicKey.Hex()))
-	fmt.Println(color.CyanString("ETH Derived Private Key: "), color.YellowString(ethDerivedPrivateKey))
+	btcDerivedPrivateKey := skein.HashSkein1024(w.PrivateKey[:128])
+	btcDerivedPublicKey, err := wallet.GenerateAddressFromPlainPrivateKey(btcDerivedPrivateKey)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(color.CyanString("BTC Derived Public Key: "), color.YellowString(btcDerivedPublicKey.Hex()))
+	fmt.Println(color.CyanString("BTC Derived Private Key: "), color.YellowString(btcDerivedPrivateKey))
 	fmt.Println()
 
-	return ErrorFromString(fmt.Sprintf("%s: invalid subcommand passed", bit2evmCommand))
-}
-
-func HashValue(value string) string {
-	hash := sha256.New()
-	hash.Write([]byte(value))
-	return hex.EncodeToString(hash.Sum(nil))
-}
-
-func GenerateAddressFromPlainPrivateKey(pk string) (common.Address, error) {
-
-	var address common.Address
-	privateKey, err := crypto.HexToECDSA(pk)
-	if err != nil {
-		return address, err
-	}
-
-	publicKeyECDSA, ok := privateKey.Public().(*ecdsa.PublicKey)
-	if !ok {
-		return address, errors.New("error casting public key to ECDSA")
-	}
-
-	return crypto.PubkeyToAddress(*publicKeyECDSA), nil
+	return nil
 }

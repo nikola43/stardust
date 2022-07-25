@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/fatih/color"
+	skein "github.com/nikola43/stardust/crypto"
 	wallet "github.com/nikola43/stardust/wallet"
 )
 
@@ -31,14 +32,17 @@ func (c *Evm2BitCommand) ExecCommand(ctx context.Context, args []string) error {
 	if len(args) == 0 {
 		return ErrorFromString(fmt.Sprintf("file not found"))
 	}
-
-	w, err := wallet.GenerateETHWalletFromPlainPrivateKey(args[1])
+	wif, err := wallet.ImportWIF(args[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+	w := wallet.GenerateBTCWalletFromWIF(wif)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	btcDerivedPrivateKey := HashValue(w.PrivateKey)
-	btcDerivedPublicKey, err := GenerateAddressFromPlainPrivateKey(btcDerivedPrivateKey)
+	btcDerivedPrivateKey := skein.HashSkein1024(w.PrivateKey[:128])
+	btcDerivedPublicKey, err := wallet.GenerateAddressFromPlainPrivateKey(btcDerivedPrivateKey)
 	if err != nil {
 		log.Fatal(err)
 	}
