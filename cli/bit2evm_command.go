@@ -11,7 +11,7 @@ type Bit2EvmCommand struct {
 
 const (
 	bit2evmCommand     = "bit2evm"
-	bit2evmDescription = "derive ETH public and private key from BTC private key"
+	bit2evmDescription = "Generate ETH ublic and private key from BTC private WIF"
 )
 
 func newBit2EvmCommand() Command {

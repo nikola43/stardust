@@ -9,9 +9,19 @@ type CreateCommand struct {
 	args *Args
 }
 
+/*
+
+master-wallet
+$ stardust create btc-wallet
+$ stardust create eth-wallet
+$ stardust create network
+$ stardust create network 3
+$ stardust create node 2cfd7f563b
+*/
+
 const (
 	createCommand     = "create"
-	createDescription = "create blockchain wallet"
+	createDescription = "create wallets, networks, nodes"
 
 	createMasterWallet = "master-wallet"
 	createBTCWallet    = "btc-wallet"

@@ -14,7 +14,7 @@ type UploadCommand struct {
 
 const (
 	uploadCommand     = "upload"
-	uploadDescription = "derive BTC public and private key from ETH private key"
+	uploadDescription = "Upload file to chain"
 )
 
 func newUploadCommand() Command {

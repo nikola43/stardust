@@ -11,7 +11,7 @@ type DeployCommand struct {
 
 const (
 	deployCommand     = "deploy"
-	deployDescription = "derive BTC public and private key from ETH private key"
+	deployDescription = "Deploy web project on chain"
 )
 
 func newDeployCommand() Command {
