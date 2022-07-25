@@ -35,10 +35,3 @@ nodes:
         - 10.110.0.2/24
       privateSubnets:
         - 10.110.0.0/24
-  - node:
-      name: node4
-      address: 192.168.0.10
-      privateAddresses:
-        - 10.110.0.4/24
-      privateSubnets:
-        - 10.110.0.0/24
