@@ -5,7 +5,7 @@ etcd:
   timeout: 5
 server:
   keepalive: 10
-  insecure: true
+  insecure: false
   mtu: 1300
 crypto:
   type: gcm

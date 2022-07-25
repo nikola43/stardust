@@ -5,11 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
 	"net"
 	"os"
+	"strconv"
 	"syscall"
 	"time"
 
+	"github.com/fatih/color"
 	"github.com/nikola43/stardust/config"
 	"github.com/nikola43/stardust/crypto"
 	"github.com/nikola43/stardust/router"
@@ -24,6 +27,9 @@ const (
 	maxBufSize  = 1518
 	maxChanSize = 1000
 )
+
+var sendBytes = 0
+var receivedBytes = 0
 
 // Server represents vpn server
 type Server struct {
@@ -326,6 +332,8 @@ func (t *tun) reader(ctx context.Context, ifce *water.Interface) {
 		if err != nil {
 			panic(err)
 		}
+		//receivedBytes += n
+		//fmt.Println(color.CyanString("Total Receive: "), HumanFileSize(float64(receivedBytes)))
 
 		select {
 		case t.read <- b[:n]:
@@ -345,14 +353,13 @@ func (t *tun) writer(ctx context.Context, ifce *water.Interface) {
 		select {
 		case b = <-t.write:
 			fmt.Println("b", b)
-
-			//byteArray := []byte{107, 97, 116, 117, 109, 98, 97}
-
 			n, err := ifce.Write(b)
 			if err != nil {
 				panic(err)
 			}
 			fmt.Println("writted", n)
+			sendBytes += n
+			fmt.Println(color.CyanString("Total Writted: "), HumanFileSize(float64(sendBytes)))
 
 		case <-ctx.Done():
 			return
@@ -455,4 +462,37 @@ func diffStrSlice(n, o []string) []string {
 	}
 
 	return diff
+}
+
+var (
+	suffixes [5]string
+)
+
+func Round(val float64, roundOn float64, places int) (newVal float64) {
+	var round float64
+	pow := math.Pow(10, float64(places))
+	digit := pow * val
+	_, div := math.Modf(digit)
+	if div >= roundOn {
+		round = math.Ceil(digit)
+	} else {
+		round = math.Floor(digit)
+	}
+	newVal = round / pow
+	return
+}
+
+func HumanFileSize(size float64) string {
+	fmt.Println(size)
+	suffixes[0] = "B"
+	suffixes[1] = "KB"
+	suffixes[2] = "MB"
+	suffixes[3] = "GB"
+	suffixes[4] = "TB"
+
+	base := math.Log(size) / math.Log(1024)
+	getSize := Round(math.Pow(1024, base-math.Floor(base)), .5, 2)
+	fmt.Println(int(math.Floor(base)))
+	getSuffix := suffixes[int(math.Floor(base))]
+	return strconv.FormatFloat(getSize, 'f', -1, 64) + " " + string(getSuffix)
 }

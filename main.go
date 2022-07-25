@@ -33,5 +33,5 @@ func ShowPaymentQr() {
 
 
 	 // Generate a 'dense' qrcode with the 'Low' level error correction and write it to Stdout
-	 qrterminal.Generate("0x6d5F00aE01F715D3082Ad40dfB5c18A1a35d3A17", qrterminal.L, os.Stdout)
+	 qrterminal.Generate("0x6d5F00aE01F715D3082Ad40dfB5c18A1a35d3A17", qrterminal.H, os.Stdout)
 }

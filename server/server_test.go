@@ -82,7 +82,7 @@ func TestListenPacketV3(t *testing.T) {
 		panic(err)
 	}
 
-	conn, err := net.Dial("udp", "146.190.239.223:8085")
+	conn, err := net.Dial("udp", "192.168.0.19:8085")
 	if err != nil {
 		fmt.Println(err)
 		t.Error()
@@ -139,7 +139,7 @@ func TestListenPacketWriteFile(t *testing.T) {
 		panic(err)
 	}
 
-	conn, err := net.Dial("udp", "146.190.239.223:8085")
+	conn, err := net.Dial("udp", "192.168.0.19:8085")
 	if err != nil {
 		fmt.Println(err)
 		t.Error()
@@ -148,8 +148,9 @@ func TestListenPacketWriteFile(t *testing.T) {
 	if conn == nil {
 		t.Error()
 	}
-	fmt.Fprintf(conn, string(b))
-
+	n, err :=  fmt.Fprintf(conn, string(b))
+	fmt.Println(n)
+	fmt.Println(err)
 }
 
 func TestListenPacket(t *testing.T) {
