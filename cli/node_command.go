@@ -52,6 +52,7 @@ func (c *NodeCommand) Run() error {
 }
 
 func (c *NodeCommand) UpdateEtcd() {
+	fmt.Println("UpdateConf")
 	err := config.UpdateConf(update, configFile)
 	if err != nil {
 		fmt.Println("UpdateConf")
