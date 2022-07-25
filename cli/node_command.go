@@ -32,7 +32,8 @@ const (
 	nodeCommand     = "node"
 	nodeDescription = "node wallets, networks, nodes"
 
-	Run = "run"
+	Run        = "run"
+	UpdateEtcd = "update-config"
 )
 
 func newNodeCommand() Command {
@@ -45,9 +46,18 @@ func newNodeCommand() Command {
 
 func (c *NodeCommand) Run() error {
 
-	fmt.Println("run network")
+	fmt.Println("run server")
 	RunServer()
 	return nil
+}
+
+func (c *NodeCommand) UpdateEtcd() {
+	err := config.UpdateConf(update, configFile)
+	if err != nil {
+		fmt.Println("UpdateConf")
+		panic(err)
+	}
+	os.Exit(0)
 }
 
 func (c *NodeCommand) ExecCommand(ctx context.Context, args []string) error {
@@ -59,6 +69,8 @@ func (c *NodeCommand) ExecCommand(ctx context.Context, args []string) error {
 	subcommand := c.args.pop()
 	switch subcommand {
 	case Run:
+		c.Run()
+	case UpdateEtcd:
 		c.Run()
 	}
 

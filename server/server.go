@@ -126,7 +126,7 @@ func (s *Server) watcher(ctx context.Context) {
 				return
 			}
 
-			panic("updating routes and crypto key ...")
+			fmt.Println("updating routes and crypto key ...")
 
 			s.updateRoutes()
 			if !s.Config.Server.Insecure {
