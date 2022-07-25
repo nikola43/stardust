@@ -3,6 +3,10 @@ package cli
 import (
 	"context"
 	"fmt"
+	"log"
+
+	"github.com/fatih/color"
+	wallet "github.com/nikola43/stardust/wallet"
 )
 
 type Evm2BitCommand struct {
@@ -22,21 +26,26 @@ func newEvm2BitCommand() Command {
 	}
 }
 
-func (c *Evm2BitCommand) evm2bitMasterWallet() error {
-	fmt.Println("evm2bit master wallet")
-	return nil
-}
-
-func (c *Evm2BitCommand) evm2bitBTCWallet() error {
-	fmt.Println("evm2bit BTC wallet")
-	return nil
-}
-
 func (c *Evm2BitCommand) ExecCommand(ctx context.Context, args []string) error {
-	if len(args) == 0 {
-		return ErrorFromString(fmt.Sprintf("%s: no subcommand passed", evm2bitCommand))
-	}
 	c.args = &Args{args}
+	if len(args) == 0 {
+		return ErrorFromString(fmt.Sprintf("file not found"))
+	}
 
-	return ErrorFromString(fmt.Sprintf("%s: invalid subcommand passed", evm2bitCommand))
+	w, err := wallet.GenerateETHWalletFromPlainPrivateKey(args[1])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	btcDerivedPrivateKey := HashValue(w.PrivateKey)
+	btcDerivedPublicKey, err := GenerateAddressFromPlainPrivateKey(btcDerivedPrivateKey)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(color.CyanString("BTC Derived Public Key: "), color.YellowString(btcDerivedPublicKey.Hex()))
+	fmt.Println(color.CyanString("BTC Derived Private Key: "), color.YellowString(btcDerivedPrivateKey))
+	fmt.Println()
+
+	return nil
 }

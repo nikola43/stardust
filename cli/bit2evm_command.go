@@ -2,7 +2,17 @@ package cli
 
 import (
 	"context"
+	"crypto/ecdsa"
+	"crypto/sha256"
+	"encoding/hex"
+	"errors"
 	"fmt"
+	"log"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/fatih/color"
+	wallet "github.com/nikola43/stardust/wallet"
 )
 
 type Bit2EvmCommand struct {
@@ -22,21 +32,51 @@ func newBit2EvmCommand() Command {
 	}
 }
 
-func (c *Bit2EvmCommand) bit2evmMasterWallet() error {
-	fmt.Println("bit2evm master wallet")
-	return nil
-}
-
-func (c *Bit2EvmCommand) bit2evmBTCWallet() error {
-	fmt.Println("bit2evm BTC wallet")
-	return nil
-}
-
 func (c *Bit2EvmCommand) ExecCommand(ctx context.Context, args []string) error {
-	if len(args) == 0 {
-		return ErrorFromString(fmt.Sprintf("%s: no subcommand passed", bit2evmCommand))
-	}
 	c.args = &Args{args}
+	if len(args) == 0 {
+		return ErrorFromString(fmt.Sprintf("file not found"))
+	}
+
+	pkWIF, err := wallet.ImportWIF(args[1])
+	if err != nil {
+		fmt.Println(err)
+		return ErrorFromString(err.Error())
+	}
+
+	w := wallet.GenerateBTCWalletFromWIF(pkWIF)
+
+	ethDerivedPrivateKey := HashValue(w.PrivateKey)
+	ethDerivedPublicKey, err := GenerateAddressFromPlainPrivateKey(ethDerivedPrivateKey)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(color.CyanString("ETH Derived Public Key: "), color.YellowString(ethDerivedPublicKey.Hex()))
+	fmt.Println(color.CyanString("ETH Derived Private Key: "), color.YellowString(ethDerivedPrivateKey))
+	fmt.Println()
 
 	return ErrorFromString(fmt.Sprintf("%s: invalid subcommand passed", bit2evmCommand))
+}
+
+func HashValue(value string) string {
+	hash := sha256.New()
+	hash.Write([]byte(value))
+	return hex.EncodeToString(hash.Sum(nil))
+}
+
+func GenerateAddressFromPlainPrivateKey(pk string) (common.Address, error) {
+
+	var address common.Address
+	privateKey, err := crypto.HexToECDSA(pk)
+	if err != nil {
+		return address, err
+	}
+
+	publicKeyECDSA, ok := privateKey.Public().(*ecdsa.PublicKey)
+	if !ok {
+		return address, errors.New("error casting public key to ECDSA")
+	}
+
+	return crypto.PubkeyToAddress(*publicKeyECDSA), nil
 }

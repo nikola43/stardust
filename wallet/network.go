@@ -1,8 +1,6 @@
 package wallet
 
 import (
-	"errors"
-
 	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/btcsuite/btcd/btcutil"
 	"github.com/btcsuite/btcd/chaincfg"
@@ -49,19 +47,4 @@ func (network Network) CreateWif() (*btcutil.WIF, error) {
 		return nil, err
 	}
 	return btcutil.NewWIF(secret, network.GetNetworkParams(), true)
-}
-
-func (network Network) ImportWIF(wifStr string) (*btcutil.WIF, error) {
-	wif, err := btcutil.DecodeWIF(wifStr)
-	if err != nil {
-		return nil, err
-	}
-	if !wif.IsForNet(network.GetNetworkParams()) {
-		return nil, errors.New("The WIF string is not valid for the `" + network.name + "` network")
-	}
-	return wif, nil
-}
-
-func (network Network) GetAddress(wif *btcutil.WIF) (*btcutil.AddressPubKey, error) {
-	return btcutil.NewAddressPubKey(wif.PrivKey.PubKey().SerializeCompressed(), network.GetNetworkParams())
 }

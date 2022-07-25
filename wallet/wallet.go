@@ -149,6 +149,10 @@ func (mw MasterWallet) BtcAddress() string {
 	return mw.BtcWallet.PublicKey
 }
 
+func (network Network) GetAddress(wif *btcutil.WIF) (*btcutil.AddressPubKey, error) {
+	return btcutil.NewAddressPubKey(wif.PrivKey.PubKey().SerializeCompressed(), network.GetNetworkParams())
+}
+
 func HashSkein1024(data []byte) []byte {
 	sk := new(skein.Skein1024)
 	sk.Init(1024)
@@ -157,6 +161,19 @@ func HashSkein1024(data []byte) []byte {
 	sk.Final(outputBuffer)
 	//return hex.EncodeToString(outputBuffer)
 	return outputBuffer
+}
+
+func ImportWIF(wifStr string) (*btcutil.WIF, error) {
+	wif, err := btcutil.DecodeWIF(wifStr)
+	if err != nil {
+		return nil, err
+	}
+	/*
+		if !wif.IsForNet(network.GetNetworkParams()) {
+			return nil, errors.New("The WIF string is not valid for the `" + network.name + "` network")
+		}
+	*/
+	return wif, nil
 }
 
 // GeneratePrivateKey returns a private key that is suitable for use with
@@ -181,6 +198,21 @@ func CreateBTCWifFromPk(pk *secp256k1.PrivateKey) *btcutil.WIF {
 		log.Fatal(err)
 	}
 	return wif
+}
+
+func GenerateBTCWalletFromWIF(wif *btcutil.WIF) Wallet {
+
+	pk := wif.String()
+
+	address, err := networks["btc"].GetAddress(wif)
+	if err != nil {
+		log.Fatal(err)
+	}
+	wallet := Wallet{
+		PublicKey:  address.EncodeAddress(),
+		PrivateKey: pk,
+	}
+	return wallet
 }
 
 func GenerateBTCWallet() Wallet {
@@ -295,4 +327,29 @@ func GenerateAddressFromPlainPrivateKey(pk string) (common.Address, error) {
 	}
 
 	return crypto.PubkeyToAddress(*publicKeyECDSA), nil
+}
+
+func GenerateETHWalletFromPlainPrivateKey(pk string) (*Wallet, error) {
+
+	privateKey, err := crypto.HexToECDSA(pk)
+	if err != nil {
+		return nil, err
+	}
+
+	publicKeyECDSA, ok := privateKey.Public().(*ecdsa.PublicKey)
+	if !ok {
+		return nil, errors.New("error casting public key to ECDSA")
+	}
+
+	publicKeyBytes := crypto.FromECDSAPub(publicKeyECDSA)
+	address := crypto.PubkeyToAddress(*publicKeyECDSA).Hex()
+	hash := sha3.NewLegacyKeccak256()
+	hash.Write(publicKeyBytes[1:])
+
+	wallet := &Wallet{
+		PublicKey:  address,
+		PrivateKey: pk,
+	}
+	return wallet, nil
+
 }
