@@ -53,7 +53,7 @@ func (c *CLI) registerCommands() {
 	cmds = append(cmds, newEvm2BitCommand())
 	cmds = append(cmds, newUploadCommand())
 	cmds = append(cmds, newDeployCommand())
-
+	cmds = append(cmds, newNodeCommand())
 	c.commands = cmds
 }
 
