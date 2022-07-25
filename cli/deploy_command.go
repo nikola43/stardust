@@ -11,7 +11,7 @@ type DeployCommand struct {
 
 const (
 	deployCommand     = "deploy"
-	deployDescription = "Deploy web project on chain"
+	deployDescription = "deploy web project on chain"
 )
 
 func newDeployCommand() Command {

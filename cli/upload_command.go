@@ -14,7 +14,7 @@ type UploadCommand struct {
 
 const (
 	uploadCommand     = "upload"
-	uploadDescription = "Upload file to chain"
+	uploadDescription = "upload file to chain"
 )
 
 func newUploadCommand() Command {
